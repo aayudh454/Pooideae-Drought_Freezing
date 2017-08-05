@@ -8,6 +8,8 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 
 **Treatment:** Both B. distachyon and N. pulchra has three replicates for "control" (BC1-BC3 and NC1-NC3), three for drought (BD1-BD3 and ND1-ND3) three for freezing (BF1-BF4, and NF1-NF3). Wonderful data set.
 
+**Method:** 
+
 ## Table of contents    
 * [Page 1: 2017-08-05](#id-section1). Moving files and trimming 
 
@@ -31,7 +33,7 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 
 ------
 <div id='id-section1'/>
-###Page 1: 2017-08-05. Moving files, basics and trimming
+###Page 1: 2017-08-05. Moving files and trimming
 
 #### 1. Where are our files?
 
@@ -65,70 +67,41 @@ drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 NF3
 #### 2. How can you move all the files to your own directory from the server?
 
 ```
-[aadas@bluemoon-user2 ~]$ cp -r /gpfs2/scratch/djshirle/MPS/170728_SNL128_0160_AHMTLCBCXY/samples_out/* . &
+[aadas@bluemoon-user2 npulbrachyaug2017]$ cp -r /gpfs2/scratch/djshirle/MPS/170728_SNL128_0160_AHMTLCBCXY/samples_out/* . &
 ```
 
 cp=copy, *= means everything (for individual file just write the name of the file instead of *)
 
-#### 3. You need to install trimmomatic in your PC
-
-go to http://www.usadellab.org/cms/?page=trimmomatic
-
-right click on binary and copy link address 
+#### 3. Let's see what files are present in BC1 folder "Control" (Brachy) 
 
 ```
-[aadas@bluemoon-user2 ~]$ wget -c http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip
+[aadas@bluemoon-user2 BC1]$ ll
+total 2200432
+drwxr-xr-x 4 aadas usr        512 Aug  1 16:37 jcpresto_PooidFreezeDrought_20170614_BC1_R1_fastqc
+-rw-r--r-- 1 aadas usr     218646 Aug  1 16:37 jcpresto_PooidFreezeDrought_20170614_BC1_R1_fastqc.zip
+-rw-r--r-- 1 aadas usr 2253018076 Aug  1 16:37 jcpresto_PooidFreezeDrought_20170614_BC1_R1.fastq.gz
+-rw-r--r-- 1 aadas usr        165 Aug  1 16:37 jcpresto_PooidFreezeDrought_20170614_BC1_R1.fastq.gz.md5sum
+
+[aadas@bluemoon-user2 ~]$ cd nassellaBrachy_drought_freezing/trimming_nassellaBrachy/
 ```
 
-Now it's downloaded to your main directory as a zip file (Trimmomatic-0.36.zip)
+#### 4. Copy fastq.gz files of all the replicates into trimming folder 
 
-you need to **unzip**
-
-```
-[aadas@bluemoon-user2 ~]$ unzip Trimmomatic-0.36.zip 
-```
-
-then you will see Trimmomatic-0.36 in your directory
-
-#### 4. Create a new folder (command=mkdir) where you will execute all your analysis
+Now you need **R1.fastq.gz** file, so copy them to your **trimming_nassellaBrachy** folder. So, finish copying all the files.
 
 ```
-[aadas@bluemoon-user2 ~]$ mkdir Ba
+[aadas@bluemoon-user2 npulbrachyaug2017]$ cd BC2/
+[aadas@bluemoon-user2 BC2]$ cp jcpresto_PooidFreezeDrought_20170614_BC2_R1.fastq.gz ~/nassellaBrachy_drought_freezing/trimming_nassellaBrachy/
 ```
 
-my new folder is Ba
-
-#### 5. Let's see what files are present in Ba1x folder "pre-treatment" (1x)
+Remane files
 
 ```
-[aadas@bluemoon-user2 ~]$ cd Ba1x/
-[aadas@bluemoon-user2 Ba1x]$ ll
-total 10661240
-drwxr-xr-x 4 aadas usr        512 Mar 20 11:57 jcpresto_BrArisVR_20170217_Ba1x_R1_fastqc
--rw-r--r-- 1 aadas usr     197928 Mar 20 11:57 jcpresto_BrArisVR_20170217_Ba1x_R1_fastqc.zip
--rw-r--r-- 1 aadas usr 5399685374 Mar 20 11:56 jcpresto_BrArisVR_20170217_Ba1x_R1.fastq.gz
--rw-r--r-- 1 aadas usr        157 Mar 20 11:56 jcpresto_BrArisVR_20170217_Ba1x_R1.fastq.gz.md5sum
-drwxr-xr-x 4 aadas usr        512 Mar 20 11:57 jcpresto_BrArisVR_20170217_Ba1x_R2_fastqc
--rw-r--r-- 1 aadas usr     201979 Mar 20 11:57 jcpresto_BrArisVR_20170217_Ba1x_R2_fastqc.zip
--rw-r--r-- 1 aadas usr 5517001528 Mar 20 11:57 jcpresto_BrArisVR_20170217_Ba1x_R2.fastq.gz
--rw-r--r-- 1 aadas usr        157 Mar 20 11:57 jcpresto_BrArisVR_20170217_Ba1x_R2.fastq.gz.md5sum
+[aadas@bluemoon-user2 npulbrachyaug2017]$ cd BC2/
+[aadas@bluemoon-user2 BC2]$ cp jcpresto_PooidFreezeDrought_20170614_BC2_R1.fastq.gz ~/nassellaBrachy_drought_freezing/trimming_nassellaBrachy/
 ```
 
-Now you need **R1.fastq.gz** and  **R2.fastq.gz** files, so copy them to your Ba folder. **../Ba/** = this means your are moving to Ba folder. **Ba1x_precold.R1.fastq.gz** is the new name.
 
-```
-[aadas@bluemoon-user2 Ba1x]$ cp jcpresto_BrArisVR_20170217_Ba1x_R1.fastq.gz ../Ba/Ba1x_precold.R1.fastq.gz
-[aadas@bluemoon-user2 Ba1x]$ cp jcpresto_BrArisVR_20170217_Ba1x_R2.fastq.gz ../Ba/Ba1x_precold.R2.fastq.gz
-```
-
-Now in your Ba folder you have both the R1 and R2 files-
-
-```
-[aadas@bluemoon-user2 Ba]$ ll
-total 10660840
--rw-r--r-- 1 aadas usr 5399685374 Mar 20 12:21 Ba1x_precold.R1.fastq.gz
--rw-r--r-- 1 aadas usr 5517001528 Mar 20 12:25 Ba1x_precold.R2.fastq.gz
-```
 
 #### 6. Now create a script for running the trimming program
 
@@ -147,29 +120,9 @@ you should be in your **Ba** folder
 
 Now press **i** to insert 
 
+ 
+
 Copy and paste everything present in the new script from this sample one
-
-```
-#!/bin/bash
-
-######## This job needs 1 nodes, 2 processors total
-#PBS -l nodes=1:ppn=2
-# it needs to run for 6 hours
-#PBS -l walltviime=06:00:00
-#PBS -N renamer
-#PBS -j oe
-#PBS -M YOUR_ACCOUNT@uvm.edu
-#PBS -m bea
-###LOAD JAVA MODULE AVAILABLE FROM THE CLUSTER, YOU MAY WANT TO CHECK FIRST
-module load java-sdk/sun-jdk-1.6.0.12
-ulimit -s unlimited
-###CHANGE THE DIRECTORY ACCORDINGLY, THE FOLLOWING SETTINGS ARE FOR MY ACCOUNT
-SOFTWARE=/users/j/z/jzhong2/bin/Trimmomatic-0.33/
-workDIR=/users/j/z/jzhong2/scratch/wheat_polyploidization
-cd $workDIR
-#####TRIMMING COMMANDS AND PARAMETERS
-java -jar $SOFTWARE/trimmomatic-0.33.jar PE -phred33 $workDIR/Melica6weekcold01.R1.fq $workDIR/Melica6weekcold01.R2.fq $workDIR/Melica6weekcold01_R1.trimmo.fq $workDIR/Melica6weekcold01_R1.unpaired.fq $workDIR/Melica6weekcold01_R2.trimmo.fq $workDIR/Melica6weekcold01_R2.unpaired.fq ILLUMINACLIP:TruSeq3-PE-2.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:5:20 MINLEN:40
-```
 
 and **esc**, **:wq** to save and quit. 
 

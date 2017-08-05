@@ -40,17 +40,26 @@ After login you should **cd** space the location path. **ll** to see what are th
 ```
 [aadas@bluemoon-user2 ~]$ cd /gpfs2/scratch/djshirle/MPS/170728_SNL128_0160_AHMTLCBCXY/samples_out
 [aadas@bluemoon-user2 samples_out]$ ll
-total 144
--rw-r--r-- 1 djshirle usr 2504 Feb 24 16:16 170216_demux_sheet-Preston.csv.quality_table_by_lane.txt
--rw-r--r-- 1 djshirle usr 2488 Feb 24 16:16 170216_demux_sheet-Preston.csv.quality_table_by_sample.txt
-drwxr-xr-x 4 djshirle usr 8192 Feb 24 16:11 Ba1x
-drwxr-xr-x 4 djshirle usr 8192 Feb 24 15:58 Ba2x
-drwxr-xr-x 4 djshirle usr 8192 Feb 24 16:04 Ba3x
-drwxr-xr-x 4 djshirle usr 8192 Feb 24 15:59 Ba4y
-drwxr-xr-x 4 djshirle usr 8192 Feb 24 16:06 Ba5y
-drwxr-xr-x 4 djshirle usr 8192 Feb 24 16:00 Ba6y
-drwxr-xr-x 4 djshirle usr 8192 Feb 24 16:03 Ba7z
-drwxr-xr-x 4 djshirle usr 8192 Feb 24 15:58 Ba8z
+-rw-r--r-- 1 aadas usr 6106 Aug  1 16:37 170729_demux_sheet-Preston.csv.quality_table_by_lane.txt
+-rw-r--r-- 1 aadas usr 3368 Aug  1 16:37 170729_demux_sheet-Preston.csv.quality_table_by_sample.txt
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:37 BC1
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:37 BC2
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:37 BC3
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:37 BD1
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:37 BD2
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 BD3
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 BF1
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 BF2
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 BF4
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 NC1
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 NC2
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 NC3
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 ND1
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 ND2
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 ND3
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 NF1
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 NF2
+drwxr-xr-x 3 aadas usr  512 Aug  1 16:38 NF3
 ```
 
 #### 2. How can you move all the files to your own directory from the server?

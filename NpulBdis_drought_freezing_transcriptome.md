@@ -1,15 +1,15 @@
-# RNA seq. Pipeline
+# RNA seq of B. distachyon and N. pulchra with drought and freezing stress
 
 ### Author: Aayudh Das
 
 Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 
-### Data structure (*Brachyleytrum aristosum* data)
+### Data structure (*B. distachyon and N. pulchra* data)
 
-**Treatment:** There are three replicates for "pre-treatment" (1-3x), three for 24 h cold shock (4-6y), and two for 6 wk cold (7-8z). Not the perfect data set but okay given the species.
+**Treatment:** Both B. distachyon and N. pulchra has three replicates for "control" (BC1-BC3 and NC1-NC3), three for drought (BD1-BD3 and ND1-ND3) three for freezing (BF1-BF4, and NF1-NF3). Wonderful data set.
 
 ## Table of contents    
-* [Page 1: 2017-03-20](#id-section1). Moving files and trimming 
+* [Page 1: 2017-08-05](#id-section1). Moving files and trimming 
 
 * [Page 2: 2017-03-23](#id-section2). Trimming Ba2-3x, Ba4-6y, Ba7-8z
 
@@ -31,14 +31,14 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 
 ------
 <div id='id-section1'/>
-###Page 1: 2017-03-20. Moving files, basics and trimming
+###Page 1: 2017-08-05. Moving files, basics and trimming
 
 #### 1. Where are our files?
 
 After login you should **cd** space the location path. **ll** to see what are the files present
 
 ```
-[aadas@bluemoon-user2 ~]$ cd /gpfs2/scratch/djshirle/MPS/170216_SNL128_0151_AHC72LBCXY/samples_out/
+[aadas@bluemoon-user2 ~]$ cd /gpfs2/scratch/djshirle/MPS/170728_SNL128_0160_AHMTLCBCXY/samples_out
 [aadas@bluemoon-user2 samples_out]$ ll
 total 144
 -rw-r--r-- 1 djshirle usr 2504 Feb 24 16:16 170216_demux_sheet-Preston.csv.quality_table_by_lane.txt
@@ -56,7 +56,7 @@ drwxr-xr-x 4 djshirle usr 8192 Feb 24 15:58 Ba8z
 #### 2. How can you move all the files to your own directory from the server?
 
 ```
-[aadas@bluemoon-user2 ~]$ cp -r /gpfs2/scratch/djshirle/MPS/170216_SNL128_0151_AHC72LBCXY/samples_out/* . &
+[aadas@bluemoon-user2 ~]$ cp -r /gpfs2/scratch/djshirle/MPS/170728_SNL128_0160_AHMTLCBCXY/samples_out/* . &
 ```
 
 cp=copy, *= means everything (for individual file just write the name of the file instead of *)

@@ -13,7 +13,7 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 ## Table of contents    
 * [Page 1: 2017-08-05](#id-section1). Moving files and trimming 
 
-* [Page 2: 2017-03-23](#id-section2). Trimming by Trimmomatic
+* [Page 2: 2017-08-05](#id-section2). Trimming for all files
 
 * [Page 3 2017-03-24](#id-section3). Concatenation and assembly (using Trinity 2.4.0)
 
@@ -165,21 +165,23 @@ https://www.uvm.edu/~vacc/?Page=userguide.php
 
 first part of the script explains that details
 
-ii. Now you need to specify where your software is present i.e. the Trimmomatic-0.36 which is in your main directory **/users/a/a/aadas/Trimmomatic-0.36**
+ii. Now you need to specify where your software is present i.e. the Trimmomatic-0.36 which is in your main directory **/users/a/a/aadas/Bin/Trimmomatic-0.36**
 
-iii. Specify your working directory-**/users/a/a/aadas/Ba** (because your R1 and R2 files are in Ba)
+iii. Specify your working directory-
+
+Just **pwd** where ever your files are and then copy that in the script.
+
+**/users/a/a/aadas/nassellaBrachy_drought_freezing/trimming_nassellaBrachy**
 
 iv. TRIMMING COMMANDS AND PARAMETERS
 
 a. change software version from as **trimmomatic-0.36**
 
-b. Now the **first 2 files are your input file**, so after $workDIR/"name of the file" space [here R1 and R2 is the main change]
+b. Now the **first file is your input file**, so after $workDIR/"name of the file" space
 
-c. Last 4 files are **output files**.  
+c. Last file is your **output file**.  
 
-$workDIR/Ba1x_precold_R1.trimmo.fq.gz $workDIR/Ba1x_precold.R1.unpaired.fq.gz $workDIR/Ba1x_precold.R2.trimmo.fq.gz $workDIR/Ba1x_precold.R2.unpaired.fq.gz
-
-for 1st pair one is paired named as R1.**trimmo** and R1.**unpaired**. same for the second pair.
+**$workDIR/NF3_trimmed.fq.gz**
 
 #### 7. Make your script executable
 
@@ -212,7 +214,7 @@ hang on there it's gonna take 6hrs. You can submit multiple jobs.
 
 -----
 <div id='id-section2'/>
-### Page 2: 2017-03-23. Trimming Ba2-3x, Ba4-6y, Ba7-8z 
+### Page 2: 2017-08-05. Trimming for all files 
 
 ###### Some moving tips 
 
@@ -223,35 +225,10 @@ mv oldname newname
 mv *.trimmo.fq.gz ../Brachyleytrum_aristosum
 ```
 
-#### Moving Ba2x,Ba3x file to Ba folder
+#### Moving all files to 'trimming_nassellaBrachy' folder, edit the script and execute that
 
 ```
-[aadas@bluemoon-user2 ~]$ cd Ba2x/
-[aadas@bluemoon-user2 Ba2x]$ cp jcpresto_BrArisVR_20170217_Ba2x_R1.fastq.gz ../Ba/Ba2x_precold.R1.fastq.gz
-[aadas@bluemoon-user2 Ba2x]$ cp jcpresto_BrArisVR_20170217_Ba2x_R2.fastq.gz ../Ba/Ba2x_precold.R2.fastq.gz
-
-```
-
-#### Now edit the script -
-
-```
-[aadas@bluemoon-user2 ~]$ cd Ba/
-[aadas@bluemoon-user2 Ba]$ ll
-[aadas@bluemoon-user2 Ba]$ vi trimmomatic.sh 
-```
-
-replace the Ba1x with Ba2x. Then :wq to save
-
-#### Now make the script execute the task 
-
-```
-[aadas@bluemoon-user2 Ba]$ chmod 700 trimmomatic.sh 
-```
-
-#### Submit the job and view
-
-```
-[aadas@bluemoon-user2 Ba]$ qsub trimmomatic.sh
+[aadas@bluemoon-user2 Ba]$ qsub trim.sh
 [aadas@bluemoon-user2 Ba]$ showq -u aadas
 ```
 

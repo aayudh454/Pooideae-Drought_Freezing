@@ -244,6 +244,8 @@ mv *.trimmo.fq.gz ../Brachyleytrum_aristosum
 [aadas@bluemoon-user2 trimming_nassellaBrachy]$ zcat *trimmed.fq.gz > brachyNpul.R1.trimmed.fq &
 ```
 
+It takes about 30 min. Don't think it's done right away!
+
 #### 3. After finishing the concatenation check the number of reads
 
 ```
@@ -262,7 +264,7 @@ check that how much you get if you play with the parameters.
 
 <div id='id-section3'/>
 
-### Page 3: 2017-03-24. Assembly
+### Page 3: 2017-03-24. Assembly by Trinity 2.1.1
 
 ###### Some tips
 
@@ -276,7 +278,7 @@ Save all the commands as a history.txt
 [aadas@bluemoon-user2 ~]$ history > history.txt
 ```
 
-#### 1. Install trinity (using Trinity 2.4.0) 
+#### 1. Install trinity (using Trinity 2.1.1) 
 
 Go to - https://github.com/trinityrnaseq/trinityrnaseq/releases and then copy link address of **Source code (tar.gz)**
 
@@ -315,64 +317,7 @@ but when downloading Trinity v2.0.6
 [aadas@bluemoon-user2 trinityrnaseq-2.0.6]$ make plugins
 ````
 
-#### 2. Execute concatenation 
-
-```
-[aadas@bluemoon-user2 trimming_nassellaBrachy]$ zcat *trimmed.fq.gz > brachyNpul.R1.trimmed.fq &
-[aadas@bluemoon-user2 Brachyleytrum_aristosum]$ zcat *R2.trimmo.fq.gz > BrachyletrumARI.R2.trimmo.fq &
-```
-
-
-
-#### 3. Make sure you have a script to do the assembly 
-
-```
-#!/bin/bash
-
-#PBS -l nodes=1:ppn=8,mem=96G,vmem=100G
-#PBS -q poolmemq
-# it needs to run for 6 hours
-#PBS -l walltime=30:00:00
-#PBS -N trinity
-#PBS -j oe
-#PBS -M aadas@uvm.edu
-#PBS -m bea
-module load samtools-1.3.1-gcc-6.3.0-e5jw5u4
-module load bowtie2-2.2.5-gcc-6.3.0-daskah5
-ulimit -s unlimited
-
-SOFTWAREDIR=/users/a/a/aadas/Bin/trinityrnaseq-Trinity-v2.4.0
-WORKINGDIR=/users/a/a/aadas/Brachyleytrum_aristosum
-cd $WORKINGDIR
-
-$SOFTWAREDIR/Trinity --seqType fq --max_memory 96G --left $WORKINGDIR/AegilopsLON_reads1.fastq --right $WORKINGDIR/AegilopsLON_reads2.fastq --CPU 8
-```
-
-edit the script (change WORKINGDIR file names)
-
-```
-#!/bin/bash
-
-#PBS -l nodes=1:ppn=16,mem=96G,vmem=100G
-#PBS -q poolmemq
-# it needs to run for 6 hours
-#PBS -l walltime=30:00:00
-#PBS -N trinity
-#PBS -j oe
-#PBS -M aadas@uvm.edu
-#PBS -m bea
-module load samtools-1.3.1-gcc-6.3.0-e5jw5u4
-module load bowtie2-2.2.5-gcc-6.3.0-daskah5
-ulimit -s unlimited
-
-SOFTWAREDIR=/users/a/a/aadas/Bin/trinityrnaseq-Trinity-v2.4.0
-WORKINGDIR=/users/a/a/aadas/Brachyleytrum_aristosum
-cd $WORKINGDIR
-
-$SOFTWAREDIR/Trinity --seqType fq --max_memory 96G --left $WORKINGDIR/BrachyletrumARI.R1.trimmo.fq --right $WORKINGDIR/BrachyletrumARI.R2.trimmo.fq --CPU 16
-```
-
-Here you need to include the module load but first you need to check what modules are availble in the cluster.
+edit the script (change WORKINGDIR file names). Here you need to include the module load but first you need to check what modules are availble in the cluster.
 
 ```
 [aadas@bluemoon-user2 Brachyleytrum_aristosum]$ module avail
@@ -382,6 +327,39 @@ Then include the samtools and bowtie version, so that your script can use that p
 
 Increase the cpu load to 16 in **ppn=16** and also in the end **CPU 16** 
 
+#### Sript for assembly for single ended by trinity 2.1.1
+
+```
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=24,mem=256G,vmem=288G
+#PBS -q poolmemq
+# it needs to run for 6 hours
+#PBS -l walltime=30:00:00
+#PBS -N trinityv211
+#PBS -j oe
+#PBS -M aadas@uvm.edu
+#PBS -m bea
+module load samtools-1.3.1-gcc-6.3.0-e5jw5u4
+module load bowtie2-2.2.5-gcc-6.3.0-daskah5
+export PATH="/users/a/a/aadas/Bin/bowtie-1.1.1:$PATH"
+#ulimit -s unlimited
+
+SOFTWAREDIR=/users/a/a/aadas/Bin/trinityrnaseq-2.1.1
+WORKINGDIR=/users/a/a/aadas/nassellaBrachy_drought_freezing/assembly_npulBdis
+cd $WORKINGDIR
+
+/users/a/a/aadas/Bin/trinityrnaseq-2.1.1/Trinity --seqType fq --normalize_reads --max_memory 256G --single /users/a/a/aadas/nassellaBrachy_drought_freezing/assembly_npulBdis/brachyNpul_catenated.fq --CPU 24
+```
+
+##### What all those mean?
+
+- Use all reads from an individual (all conditions) to capture most genes
+- Read files may be gzipped (as in this example) or not (then they should not have the “.gz” ending)
+- Paired-end reads specified with **--left** and -**-right**. If only single-end, use **--single** instead.
+- 256G is the maximum memory to be used at any stage which allows memory limitation (jellyfish, sorting, etc.)
+- At most 24 CPU cores will be used in any stage.
+
 Submit the job and view
 
 ```
@@ -390,12 +368,6 @@ Submit the job and view
 ```
 
 If you see that 30% completed after 30hrs then qsub again and it will catch up from where it was left before.
-
-------
-
-<div id='id-section4'/>
-
-### Page 4: 2017-03-28. Assembly using Trinity 2.0.6
 
 Check the assembly file
 

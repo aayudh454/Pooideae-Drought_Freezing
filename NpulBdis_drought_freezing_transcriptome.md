@@ -13,7 +13,7 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 ## Table of contents    
 * [Page 1: 2017-08-05](#id-section1). Moving files and trimming 
 
-* [Page 2: 2017-03-23](#id-section2). Trimming Ba2-3x, Ba4-6y, Ba7-8z
+* [Page 2: 2017-03-23](#id-section2). Trimming by Trimmomatic
 
 * [Page 3 2017-03-24](#id-section3). Concatenation and assembly (using Trinity 2.4.0)
 
@@ -101,9 +101,7 @@ Remane files
 [aadas@bluemoon-user2 BC2]$ cp jcpresto_PooidFreezeDrought_20170614_BC2_R1.fastq.gz ~/nassellaBrachy_drought_freezing/trimming_nassellaBrachy/
 ```
 
-
-
-#### 6. Now create a script for running the trimming program
+#### 5. Now create a script for running the trimming program
 
 you should be in your **Ba** folder 
 
@@ -119,8 +117,6 @@ you should be in your **Ba** folder
 ```
 
 Now press **i** to insert 
-
- 
 
 Copy and paste everything present in the new script from this sample one
 
@@ -138,19 +134,44 @@ look how I edited the things
 #PBS -l nodes=1:ppn=2,mem=16gb,vmem=18gb
 # it needs to run for 6 hours
 #PBS -l walltime=06:00:00
-#PBS -N renamer
+#PBS -N D
 #PBS -j oe
 #PBS -M aadas@uvm.edu
 #PBS -m bea
 ###LOAD JAVA MODULE AVAILABLE FROM THE CLUSTER, YOU MAY WANT TO CHECK FIRST
+module load java-sdk/sun-jdk-1.6.0.12
 ulimit -s unlimited
 ###CHANGE THE DIRECTORY ACCORDINGLY, THE FOLLOWING SETTINGS ARE FOR MY ACCOUNT
-SOFTWARE=/users/a/a/aadas/Trimmomatic-0.36
-workDIR=/users/a/a/aadas/Ba
+SOFTWARE=/users/a/a/aadas/Bin/Trimmomatic-0.36
+workDIR=/users/a/a/aadas/nassellaBrachy_drought_freezing/trimming_nassellaBrachy
 cd $workDIR
 #####TRIMMING COMMANDS AND PARAMETERS
-java -jar $SOFTWARE/trimmomatic-0.36.jar PE -phred33 $workDIR/Ba1x_precold.R1.fastq.gz $workDIR/Ba1x_precold.R2.fastq.gz $workDIR/Ba1x_precold.R1.trimmo.fq.gz $workDIR/Ba1x_precold.R1.unpaired.fq.gz $workDIR/Ba1x_precold.R2.trimmo.fq.gz $workDIR/Ba1x_precold.R2.unpaired.fq.gz ILLUMINACLIP:TruSeq3-PE-2.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:5:20 MINLEN:40
+java -jar $SOFTWARE/trimmomatic-0.36.jar SE -phred33 $workDIR/BC2_R1.fastq.gz $workDIR/BC2_trimmed.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:15 MINLEN:40
 ```
+
+#### What does all this things actually mean?
+
+**Based on the sequencing** (paired end or signle end)  you need to follow this protocol BUT modify other factors! Don't copy deto!!!!!
+
+#### Paired End:
+
+`java -jar trimmomatic-0.35.jar PE -phred33 input_forward.fq.gz input_reverse.fq.gz output_forward_paired.fq.gz output_forward_unpaired.fq.gz output_reverse_paired.fq.gz output_reverse_unpaired.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36`
+
+This will perform the following:
+
+- Remove adapters (ILLUMINACLIP:TruSeq3-PE.fa:2:30:10)
+- Remove leading low quality or N bases (below quality 3) (LEADING:3)
+- Remove trailing low quality or N bases (below quality 3) (TRAILING:3)
+- Scan the read with a 4-base wide sliding window, cutting when the average quality per base drops below 15 (SLIDINGWINDOW:4:15)
+- Drop reads below the 36 bases long (MINLEN:36)
+
+#### Single End:
+
+`java -jar trimmomatic-0.35.jar SE -phred33 input.fq.gz output.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36`
+
+This will perform the same steps, using the single-ended adapter file
+
+#### 6. Now submit the job and other editing
 
 i. You need to check **Submitting Jobs to the Cluster**-
 

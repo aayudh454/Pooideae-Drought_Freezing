@@ -218,14 +218,14 @@ hang on there it's gonna take 6hrs. You can submit multiple jobs.
 
 ###### Some moving tips 
 
-#### Rename a file
+Rename a file
 
 ```
 mv oldname newname
 mv *.trimmo.fq.gz ../Brachyleytrum_aristosum
 ```
 
-#### Moving all files to 'trimming_nassellaBrachy' folder, edit the script and execute that
+#### 1. Moving all files to 'trimming_nassellaBrachy' folder, edit the script and execute that
 
 ```
 [aadas@bluemoon-user2 Ba]$ qsub trim.sh
@@ -238,7 +238,25 @@ mv *.trimmo.fq.gz ../Brachyleytrum_aristosum
 [aadas@bluemoon-user2 Ba]$ cp *.trimmo.fq.gz ../Brachyleytrum_aristosum
 ```
 
+#### 2. Execute concatenation 
 
+```
+[aadas@bluemoon-user2 trimming_nassellaBrachy]$ zcat *trimmed.fq.gz > brachyNpul.R1.trimmed.fq &
+```
+
+#### 3. After finishing the concatenation check the number of reads
+
+```
+[aadas@bluemoon-user2 trimming_nassellaBrachy]$ grep -c "@" brachyNpul.R1.trimmed.fq 
+```
+
+It shows **72805944** reads.
+
+Like I compared my previous analysis of Brachyletrium, it turns out that 72805944/168097158 is only **43%** .
+
+If it's too low then modify LEADING:20 TRAILING:20 accordingly to LEADING:3 TRAILING:3
+
+check that how much you get if you play with the parameters.
 
 ------
 
@@ -297,21 +315,14 @@ but when downloading Trinity v2.0.6
 [aadas@bluemoon-user2 trinityrnaseq-2.0.6]$ make plugins
 ````
 
-#### 2. Execute concatenation for both R1 and R2
+#### 2. Execute concatenation 
 
 ```
-[aadas@bluemoon-user2 Brachyleytrum_aristosum]$ zcat *R1.trimmo.fq.gz > BrachyletrumARI.R1.trimmo.fq &
+[aadas@bluemoon-user2 trimming_nassellaBrachy]$ zcat *trimmed.fq.gz > brachyNpul.R1.trimmed.fq &
 [aadas@bluemoon-user2 Brachyleytrum_aristosum]$ zcat *R2.trimmo.fq.gz > BrachyletrumARI.R2.trimmo.fq &
 ```
 
-#### After finishing the concatenation check the "sequence header for both R1 and R2"-it should be same
 
-```
-[aadas@bluemoon-user2 Brachyleytrum_aristosum]$ grep -c "@" BrachyletrumARI.R1.trimmo.fq 
-[aadas@bluemoon-user2 Brachyleytrum_aristosum]$ grep -c "@" BrachyletrumARI.R2.trimmo.fq 
-```
-
-both shows 168097158; That means R1 and R2 has same reads.
 
 #### 3. Make sure you have a script to do the assembly 
 

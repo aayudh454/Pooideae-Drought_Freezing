@@ -8,18 +8,18 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 
 **Treatment:** Both B. distachyon and N. pulchra has three replicates for "control" (BC1-BC3 and NC1-NC3), three for drought (BD1-BD3 and ND1-ND3) three for freezing (BF1-BF4, and NF1-NF3). Wonderful data set.
 
-**Method:** 
+**Method for sequencing:** Single eneded and stranded sequencing.
 
 ## Table of contents    
 * [Page 1: 2017-08-05](#id-section1). Moving files and trimming 
 
-* [Page 2: 2017-08-05](#id-section2). Trimming for all files
+* [Page 2: 2017-08-05](#id-section2). Trimming by Trimmomatic-0.36
 
-* [Page 3 2017-03-24](#id-section3). Concatenation and assembly (using Trinity 2.4.0)
+* [Page 3 2017-08-06](#id-section3). Assembly by Trinity 2.1.1
 
-* [Page 4 2017-03-28](#id-section4). Assembly using Trinity 2.0.6 and 2.1.1 
+* [Page 4 2017-03-28](#id-section4). Transcript quantification by RSEM 
 
-* [Page 5 2017-04-11](#id-section5). Transcript quantification by RSEM
+* [Page 5 2017-04-11](#id-section5). 
 
 * [Page 6 2017-04-13](#id-section6). Build Transcript and Gene Expression Matrices
 
@@ -260,13 +260,21 @@ If it's too low then modify LEADING:20 TRAILING:20 accordingly to LEADING:3 TRAI
 
 check that how much you get if you play with the parameters.
 
+#### 4. Move the catenated file to a new folder where you will do assembly
+
+``` 
+[aadas@bluemoon-user2 trimming_nassellaBrachy]$ cp brachyNpul_catenated.fq ~/nassellaBrachy_drought_freezing/assembly_npulBdis/
+```
+
+
+
 ------
 
 <div id='id-section3'/>
 
 ### Page 3: 2017-03-24. Assembly by Trinity 2.1.1
 
-###### Some tips
+### Some tips
 
 to delete a line: **esc** and **d+d**
 
@@ -276,6 +284,18 @@ Save all the commands as a history.txt
 
 ```
 [aadas@bluemoon-user2 ~]$ history > history.txt
+```
+
+##### When you download something in mac and upload that to server
+
+```
+scp bowtie-1.2-linux-x86_64.zip aadas@bluemoon-user2.uvm.edu:~/
+```
+
+##### Delete an entire directory
+
+```
+rm -rf filename
 ```
 
 #### 1. Install trinity (using Trinity 2.1.1) 
@@ -327,7 +347,7 @@ Then include the samtools and bowtie version, so that your script can use that p
 
 Increase the cpu load to 16 in **ppn=16** and also in the end **CPU 16** 
 
-#### Sript for assembly for single ended by trinity 2.1.1
+#### 2. Sript for assembly for single ended by trinity 2.1.1
 
 ```
 #!/bin/bash
@@ -360,6 +380,21 @@ cd $WORKINGDIR
 - 256G is the maximum memory to be used at any stage which allows memory limitation (jellyfish, sorting, etc.)
 - At most 24 CPU cores will be used in any stage.
 
+#### First time before you execute the job with a new Trinity version
+
+```
+  936  2017-04-05 10:28:20 module load samtools-1.3.1-gcc-6.3.0-e5jw5u4
+  937  2017-04-05 10:28:32 export PATH="/users/a/a/aadas/Bin/bowtie-1.2:$PATH"
+  938  2017-04-05 10:28:40 export PATH="/users/a/a/aadas/Bin/jre1.7.0_80/bin:$PATH"
+  939  2017-04-05 10:28:46 export PATH="/users/a/a/aadas/Bin/jre1.7.0_80/bin/java:$PATH"
+  940  2017-04-05 10:29:10 cd ..
+  941  2017-04-05 10:29:19 cd Bin/
+  942  2017-04-05 10:29:20 ll
+  943  2017-04-05 10:29:32 cd trinityrnaseq-Trinity-v2.3.2
+  944  2017-04-05 10:29:35 make
+  945  2017-04-05 10:34:06 cd ~/
+```
+
 Submit the job and view
 
 ```
@@ -369,7 +404,7 @@ Submit the job and view
 
 If you see that 30% completed after 30hrs then qsub again and it will catch up from where it was left before.
 
-Check the assembly file
+#### 3. Check the assembly file
 
 ```
 # number of sequence present
@@ -389,88 +424,6 @@ check no. of seq
 
 567758
 
-#### New script for assembly (Trinity 2.0.6) 
-
-```
-#!/bin/bash
-
-#PBS -l nodes=1:ppn=16,mem=96G,vmem=128G
-#PBS -q poolmemq
-# it needs to run for 6 hours
-#PBS -l walltime=30:00:00
-#PBS -N trinity
-#PBS -j oe
-#PBS -M aadas@uvm.edu
-#PBS -m bea
-module load samtools-1.3.1-gcc-6.3.0-e5jw5u4
-
-export PATH="/users/a/a/aadas/Bin/bowtie-1.2:$PATH"
-export PATH="/users/a/a/aadas/Bin/jre1.7.0_80/bin:$PATH"
-export PATH="/users/a/a/aadas/Bin/jre1.7.0_80/bin/java:$PATH"
-
-ulimit -s unlimited
-
-SOFTWAREDIR=/users/a/a/aadas/Bin_Trinity206/trinityrnaseq-2.0.6
-WORKINGDIR=/users/a/a/aadas/Brachyleytrum_aristosum
-cd $WORKINGDIR
-
-$SOFTWAREDIR/Trinity --seqType fq --max_memory 96G --left $WORKINGDIR/BrachyletrumARI.R1.trimmo.fq --right $WORKINGDIR/BrachyletrumARI.R2.trimmo.fq --CPU 16
-```
-
-##### When you download something in mac and upload that to server
-
-```
-scp bowtie-1.2-linux-x86_64.zip aadas@bluemoon-user2.uvm.edu:~/
-```
-
-##### Delete an entire directory
-
-```
-rm -rf filename
-```
-
-### Running assembly with Trinity 2.1.1
-
-```
-#!/bin/bash
-
-#PBS -l nodes=1:ppn=24,mem=256G,vmem=288G
-#PBS -q poolmemq
-# it needs to run for 6 hours
-#PBS -l walltime=30:00:00
-#PBS -N trinityv211
-#PBS -j oe
-#PBS -M aadas@uvm.edu
-#PBS -m bea
-module load samtools-1.3.1-gcc-6.3.0-e5jw5u4
-module load bowtie2-2.2.5-gcc-6.3.0-daskah5
-export PATH="/users/a/a/aadas/Bin/bowtie-1.1.1:$PATH"
-#ulimit -s unlimited
-
-SOFTWAREDIR=/users/a/a/aadas/Bin/trinityrnaseq-2.1.1
-WORKINGDIR=/users/a/a/aadas/Brachyleytrum_aristosum/Trinity211assembly
-cd $WORKINGDIR
-
-/users/a/a/aadas/Bin/trinityrnaseq-2.1.1/Trinity --seqType fq --normalize_reads --max_memory 256G --left /users/a/a/aadas/Brachyleytrum_aristosum/Trinity211assembly/BrachyletrumARI.R1.trimmo.fq --right /users/a/a/aadas/Brachyleytrum_aristosum/Trinity211assembly/BrachyletrumARI.R2.trimmo.fq --CPU 24
-```
-
- 
-
-#### First time before you execute the job with a new Trinity version
-
-```
-  936  2017-04-05 10:28:20 module load samtools-1.3.1-gcc-6.3.0-e5jw5u4
-  937  2017-04-05 10:28:32 export PATH="/users/a/a/aadas/Bin/bowtie-1.2:$PATH"
-  938  2017-04-05 10:28:40 export PATH="/users/a/a/aadas/Bin/jre1.7.0_80/bin:$PATH"
-  939  2017-04-05 10:28:46 export PATH="/users/a/a/aadas/Bin/jre1.7.0_80/bin/java:$PATH"
-  940  2017-04-05 10:29:10 cd ..
-  941  2017-04-05 10:29:19 cd Bin/
-  942  2017-04-05 10:29:20 ll
-  943  2017-04-05 10:29:32 cd trinityrnaseq-Trinity-v2.3.2
-  944  2017-04-05 10:29:35 make
-  945  2017-04-05 10:34:06 cd ~/
-```
-
 Check back after your job is done
 
 ```
@@ -484,9 +437,9 @@ l
 
 ------
 
-<div id='id-section5'/>
+<div id='id-section4'/>
 
-### Page 5: 2017-04-11. Transcript quantification by RSEM
+### Page 4: 2017-04-11. Transcript quantification by RSEM
 
 RSEM: accurate transcript quantification from RNA-Seq data with or without a reference genome
 

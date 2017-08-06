@@ -94,26 +94,12 @@ Now you need **R1.fastq.gz** file, so copy them to your **trimming_nassellaBrach
 [aadas@bluemoon-user2 BC2]$ cp jcpresto_PooidFreezeDrought_20170614_BC2_R1.fastq.gz ~/nassellaBrachy_drought_freezing/trimming_nassellaBrachy/
 ```
 
-Remane files
-
-```
-[aadas@bluemoon-user2 npulbrachyaug2017]$ cd BC2/
-[aadas@bluemoon-user2 BC2]$ cp jcpresto_PooidFreezeDrought_20170614_BC2_R1.fastq.gz ~/nassellaBrachy_drought_freezing/trimming_nassellaBrachy/
-```
-
 #### 5. Now create a script for running the trimming program
 
-you should be in your **Ba** folder 
+you should be in your **trimming** folder. Now to create a blank script
 
 ```
-[aadas@bluemoon-user2 ~]$ cd Ba/
-[aadas@bluemoon-user2 Ba]$
-```
-
- Now to create a blank script
-
-```
-[aadas@bluemoon-user2 ~]$ vi trimmomatic.sh
+[aadas@bluemoon-user2 trimming_nassellaBrachy]$ vi trim.sh
 ```
 
 Now press **i** to insert 
@@ -134,7 +120,7 @@ look how I edited the things
 #PBS -l nodes=1:ppn=2,mem=16gb,vmem=18gb
 # it needs to run for 6 hours
 #PBS -l walltime=06:00:00
-#PBS -N D
+#PBS -N job
 #PBS -j oe
 #PBS -M aadas@uvm.edu
 #PBS -m bea
@@ -146,7 +132,7 @@ SOFTWARE=/users/a/a/aadas/Bin/Trimmomatic-0.36
 workDIR=/users/a/a/aadas/nassellaBrachy_drought_freezing/trimming_nassellaBrachy
 cd $workDIR
 #####TRIMMING COMMANDS AND PARAMETERS
-java -jar $SOFTWARE/trimmomatic-0.36.jar SE -phred33 $workDIR/BC2_R1.fastq.gz $workDIR/BC2_trimmed.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:15 MINLEN:40
+java -jar $SOFTWARE/trimmomatic-0.36.jar SE -phred33 $workDIR/jcpresto_PooidFreezeDrought_20170614_NF3_R1.fastq.gz $workDIR/NF3_trimmed.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:15 MINLEN:40
 ```
 
 #### What does all this things actually mean?

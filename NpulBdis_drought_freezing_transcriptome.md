@@ -214,11 +214,11 @@ hang on there it's gonna take 6hrs. You can submit multiple jobs.
 
 -----
 <div id='id-section2'/>
-### Page 2: 2017-08-05. Trimming for all files 
+### Page 2: 2017-08-05. Trimming for all files and Concatenation 
 
 ###### Some moving tips 
 
-Rename a file
+**Rename a file**
 
 ```
 mv oldname newname
@@ -228,14 +228,14 @@ mv *.trimmo.fq.gz ../Brachyleytrum_aristosum
 #### 1. Moving all files to 'trimming_nassellaBrachy' folder, edit the script and execute that
 
 ```
-[aadas@bluemoon-user2 Ba]$ qsub trim.sh
-[aadas@bluemoon-user2 Ba]$ showq -u aadas
+[aadas@bluemoon-user2 trimming_nassellaBrachy]$ qsub trim.sh
+[aadas@bluemoon-user2 trimming_nassellaBrachy]$ showq -u aadas
 ```
 
 #### Copy only the trimmo.fq.gz files to a new folder for assembly
 
 ```
-[aadas@bluemoon-user2 Ba]$ cp *.trimmo.fq.gz ../Brachyleytrum_aristosum
+[aadas@bluemoon-user2 trimming_nassellaBrachy]$ cp *.trimmo.fq.gz ../Brachyleytrum_aristosum
 ```
 
 #### 2. Execute concatenation 
@@ -250,7 +250,7 @@ mv *.trimmo.fq.gz ../Brachyleytrum_aristosum
 [aadas@bluemoon-user2 trimming_nassellaBrachy]$ grep -c "@" brachyNpul.R1.trimmed.fq 
 ```
 
-It shows **72805944** reads.
+It shows **322498031** reads. 
 
 Like I compared my previous analysis of Brachyletrium, it turns out that 72805944/168097158 is only **43%** .
 
@@ -262,7 +262,7 @@ check that how much you get if you play with the parameters.
 
 <div id='id-section3'/>
 
-### Page 3: 2017-03-24. Concatenation and assembly
+### Page 3: 2017-03-24. Assembly
 
 ###### Some tips
 

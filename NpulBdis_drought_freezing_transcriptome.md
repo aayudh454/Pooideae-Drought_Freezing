@@ -412,8 +412,6 @@ If you see that 30% completed after 30hrs then qsub again and it will catch up f
 [aadas@bluemoon-user2 assembly_npulBdis]$ grep ">" brachyNpul_Trinity211.fasta | sed "s/_i[0-9]\{1,2\} len.*//g" | sort -u | wc -l
 ```
 
-274312
-
 **check no. of seq**
 
 ```
@@ -426,8 +424,9 @@ Check back after your job is done
 
 ```
 [aadas@bluemoon-user2 assembly_npulBdis]$ grep ">" npulBdis_Trinity211.fasta | sed "s/_i[0-9]\{1,2\} len.*//g" | sort -u | wc -l
-274312
 ```
+
+**274312**
 
 ------
 

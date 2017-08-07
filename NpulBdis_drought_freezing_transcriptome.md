@@ -19,15 +19,15 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 
 * [Page 4 2017-03-28](#id-section4). Transcript quantification by RSEM 
 
-* [Page 5 2017-04-11](#id-section5). 
+* [Page 5 2017-04-11](#id-section5). Build Transcript and Gene Expression Matrices
 
-* [Page 6 2017-04-13](#id-section6). Build Transcript and Gene Expression Matrices
+* [Page 6 2017-04-13](#id-section6). Differential Expression Analysis
 
-* [Page 7 2017-04-14](#id-section7). Differential Expression Analysis
+* [Page 7 2017-04-14](#id-section7). Coding Region Identification in Trinity Assemblies
 
-* [Page 8 2017-04-25](#id-section8). Coding Region Identification in Trinity Assemblies
+* [Page 8 2017-04-25](#id-section8). Principal Component Analysis (PCA)
 
-* [Page 9 2017-05-02](#id-section9). Principal Component Analysis (PCA)
+* [Page 9 2017-05-02](#id-section9). 
 
   ​
 

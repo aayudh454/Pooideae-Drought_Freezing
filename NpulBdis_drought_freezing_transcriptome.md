@@ -266,8 +266,6 @@ check that how much you get if you play with the parameters.
 [aadas@bluemoon-user2 trimming_nassellaBrachy]$ cp brachyNpul_catenated.fq ~/nassellaBrachy_drought_freezing/assembly_npulBdis/
 ```
 
-
-
 ------
 
 <div id='id-section3'/>

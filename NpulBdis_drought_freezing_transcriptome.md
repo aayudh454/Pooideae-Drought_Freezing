@@ -270,7 +270,7 @@ check that how much you get if you play with the parameters.
 
 <div id='id-section3'/>
 
-### Page 3: 2017-03-24. Assembly by Trinity 2.1.1
+### Page 3: 2017-08-06. Assembly by Trinity 2.1.1
 
 ### Some tips
 
@@ -409,29 +409,25 @@ If you see that 30% completed after 30hrs then qsub again and it will catch up f
 [aadas@bluemoon-user2 trinity_out_dir]$ grep ">" Trinity.fasta | less
 [aadas@bluemoon-user2 trinity_out_dir]$ grep ">" Trinity.fasta | sed "s/_i[0-9]\{1,2\} len.*//g" | less
 [aadas@bluemoon-user2 trinity_out_dir]$ grep ">" Trinity.fasta | sed "s/_i[0-9]\{1,2\} len.*//g" | sort -u | less
-[aadas@bluemoon-user2 trinity_out_dir]$ grep ">" Trinity.fasta | sed "s/_i[0-9]\{1,2\} len.*//g" | sort -u | wc -l
+[aadas@bluemoon-user2 assembly_npulBdis]$ grep ">" brachyNpul_Trinity211.fasta | sed "s/_i[0-9]\{1,2\} len.*//g" | sort -u | wc -l
 ```
 
-94102
+274312
 
-check no. of seq
+**check no. of seq**
 
 ```
-[aadas@bluemoon-user2 trinity_out_dir]$ grep ">" Trinity.fasta -c
+[aadas@bluemoon-user2 assembly_npulBdis]$ grep ">" npulBdis_Trinity211.fasta -c
 ```
 
-567758
+**423850**
 
 Check back after your job is done
 
 ```
-[aadas@bluemoon-user2 trinity_out_dir]$ grep ">" Trinity.fasta -c
-303494
-[aadas@bluemoon-user2 trinity_out_dir]$ grep ">" Trinity.fasta | sed "s/_i[0-9]\{1,2\} len.*//g" | sort -u | wc -l
-173604
+[aadas@bluemoon-user2 assembly_npulBdis]$ grep ">" npulBdis_Trinity211.fasta | sed "s/_i[0-9]\{1,2\} len.*//g" | sort -u | wc -l
+274312
 ```
-
-l
 
 ------
 

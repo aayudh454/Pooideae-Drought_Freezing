@@ -393,14 +393,7 @@ cd $WORKINGDIR
   945  2017-04-05 10:34:06 cd ~/
 ```
 
-Submit the job and view
-
-```
-[aadas@bluemoon-user2 Brachyleytrum_aristosum]$ qsub vacctrinity.sh 
-[aadas@bluemoon-user2 Brachyleytrum_aristosum]$ showq -u aadas
-```
-
-If you see that 30% completed after 30hrs then qsub again and it will catch up from where it was left before.
+Submit the job and view. If you see that 30% completed after 30hrs then qsub again and it will catch up from where it was left before.
 
 #### 3. Check the assembly file
 
@@ -432,16 +425,16 @@ Check back after your job is done
 
 <div id='id-section4'/>
 
-### Page 4: 2017-04-11. Transcript quantification by RSEM
+### Page 4: 2017-08-07. Transcript quantification by RSEM
 
 RSEM: accurate transcript quantification from RNA-Seq data with or without a reference genome
 
 Script for transcript quantification.
 
-* Make sure your Trinity.fasta file in the directory
-* Make sure that R1.trimmo.fq.gz and R2.trimmo.fq.gz are also in the FASTQ_DIR
+* Make sure your **Trinity.fasta** file in the directory
+* Make sure that **.trimmed.fq.gz** is also in the FASTQ_DIR
 
-### For pre-cold
+### For Brachypodium_control
 
 ```
 #!/bin/bash
@@ -449,7 +442,7 @@ Script for transcript quantification.
 ######## This job needs 1 nodes, 4 processors total
 #PBS -l nodes=1:ppn=4,pmem=8gb,pvmem=9gb
 #PBS -l walltime=30:00:00
-#PBS -N outprecold
+#PBS -N brachypodium_control
 #PBS -j oe
 #PBS -M aadas@uvm.edu
 #PBS -m bea
@@ -460,17 +453,23 @@ TRINITY_HOME=/users/a/a/aadas/Bin/trinityrnaseq-2.1.1
 export PATH=/users/a/a/aadas/Bin/bowtie-1.1.1:$PATH
 export PATH=/users/a/a/aadas/Bin/RSEM-1.2.19:$PATH
 
-FASTQ_DIR=/users/a/a/aadas/Brachyleytrum_aristosum/assemblyTrinity2.1.1
+FASTQ_DIR=/users/a/a/aadas/nassellaBrachy_drought_freezing/rsem_npulBdis
 cd $FASTQ_DIR
 
-$TRINITY_HOME/util/align_and_estimate_abundance.pl --transcripts Brachyleytrum_trinityv211.fasta --seqType fq --left $FASTQ_DIR/Ba1x_precold_R1.trimmo.fq.gz --right $FASTQ_DIR/Ba1x_precold_R2.trimmo.fq.gz --est_method RSEM --aln_method bowtie --thread_count 4 --SS_lib_type RF --trinity_mode --prep_reference --output_dir $FASTQ_DIR --output_prefix Brachyleytrum_precold01
+$TRINITY_HOME/util/align_and_estimate_abundance.pl --transcripts npulBdis_Trinity211.fasta --seqType fq --single $FASTQ_DIR/BC1_trimmed.fq.gz --est_method RSEM --aln_method bowtie --thread_count 4 --SS_lib_type R --trinity_mode --prep_reference --output_dir $FASTQ_DIR --output_prefix Brachypodium_control01
 
+$TRINITY_HOME/util/align_and_estimate_abundance.pl --transcripts npulBdis_Trinity211.fasta --seqType fq --single $FASTQ_DIR/BC2_trimmed.fq.gz --est_method RSEM --aln_method bowtie --thread_count 4 --SS_lib_type R --trinity_mode --prep_reference --output_dir $FASTQ_DIR --output_prefix Brachypodium_control02
 
-$TRINITY_HOME/util/align_and_estimate_abundance.pl --transcripts Brachyleytrum_trinityv211.fasta --seqType fq --left $FASTQ_DIR/Ba2x_precold_R1.trimmo.fq.gz --right $FASTQ_DIR/Ba2x_precold_R2.trimmo.fq.gz --est_method RSEM --aln_method bowtie --thread_count 4 --SS_lib_type RF --trinity_mode --output_dir $FASTQ_DIR --output_prefix Brachyleytrum_precold02
-
-
-$TRINITY_HOME/util/align_and_estimate_abundance.pl --transcripts Brachyleytrum_trinityv211.fasta --seqType fq --left $FASTQ_DIR/Ba3x_precold_R1.trimmo.fq.gz --right $FASTQ_DIR/Ba3x_precold_R2.trimmo.fq.gz --est_method RSEM --aln_method bowtie --thread_count 4 --SS_lib_type RF --trinity_mode --output_dir $FASTQ_DIR --output_prefix Brachyleytrum_precold03
+$TRINITY_HOME/util/align_and_estimate_abundance.pl --transcripts npulBdis_Trinity211.fasta --seqType fq --single $FASTQ_DIR/BC3_trimmed.fq.gz --est_method RSEM --aln_method bowtie --thread_count 4 --SS_lib_type R --trinity_mode --prep_reference --output_dir $FASTQ_DIR --output_prefix Brachypodium_control03
 ```
+
+submit the job
+
+``` 
+[aadas@bluemoon-user2 rsem_npulBdis]$ qsub brachypodium_control.sh 
+```
+
+DO SAME script for all other treatments and also for Nassella.
 
 The above `R` commands list the top **10 highest expressed genes** (shown below).
 
@@ -1013,7 +1012,6 @@ for(my $i=1;$i<=$split_count;$i++){
                         "exit\n";
 }
 #and submit it
-
 ```
 
 Then (**When you run the 3rd script; generally it's submitting 300 jobs to VACC but it's not going to run; So, comment out blast-then it's only submitting hmm scan; Even if doesn't work then edit blast-part* and manually put part-1* then part-2*  **)

@@ -471,34 +471,48 @@ submit the job
 
 DO SAME script for all other treatments and also for Nassella.
 
+#### Open R in UNIX
+
+You should be in the directory where your files seats.
+
+```
+[aadas@bluemoon-user2 rsem_npulBdis]$ module load r-3.3.2-gcc-6.3.0-bmdvb4s
+[aadas@bluemoon-user2 rsem_npulBdis]$ R
+```
+
+few tips: Type 'q()' to quit R.
+
+```
+> q()
+Save workspace image? [y/n/c]: n
+```
+
 The above `R` commands list the top **10 highest expressed genes** (shown below).
 
 ```
-data = read.table("Brachyleytrum_precold01.genes.results", header=T, stringsAsFactors=F)
-idx = order(data[,"TPM"], decreasing=T)
-data[idx[1:10], c("gene_id", "expected_count", "TPM")]
+> data = read.table("Brachypodium_control01.genes.results", header=T, stringsAsFactors=F)
+> idx = order(data[,"TPM"], decreasing=T)
+> data[idx[1:10], c("gene_id", "expected_count", "TPM")]
+                     gene_id expected_count       TPM
+208017 TRINITY_DN75056_c7_g1     7959401.35 215296.86
+212426 TRINITY_DN75795_c6_g2     8291434.79 185797.31
+226295 TRINITY_DN77927_c4_g3       72412.00   9846.73
+249661 TRINITY_DN81029_c8_g1       50093.38   8856.78
+23512   TRINITY_DN1199_c0_g1        6215.77   8454.08
+108931 TRINITY_DN35614_c0_g1        8702.09   5739.32
+224027 TRINITY_DN77596_c6_g6       23774.50   5453.07
+188162 TRINITY_DN71287_c3_g1       31410.34   5402.16
+251927 TRINITY_DN81269_c3_g1      211601.00   5217.94
+120536 TRINITY_DN42492_c0_g1        3860.62   4931.95
 ```
 
-​                 gene_id expected_count      TPM
-
-83500   TRINITY_DN32640_c2_g2      195870.99 88722.96
-135779   TRINITY_DN5885_c0_g1       18720.00 21437.99
-88514   TRINITY_DN33238_c0_g3        2823.75 15100.72
-48900   TRINITY_DN25961_c0_g1       24537.02 14854.18
-85085   TRINITY_DN32831_c0_g2       36801.00 14187.48
-135853  TRINITY_DN58913_c0_g1       12804.00 13984.62
-83499   TRINITY_DN32640_c2_g1       28301.73 12804.37
-89635  TRINITY_DN33369_c0_g15       24298.99 11610.17
-88512   TRINITY_DN33238_c0_g1        2153.17 11514.64
-14964   TRINITY_DN16119_c1_g1       21600.00 10408.22
-
-###  
+Do this for all replicates!
 
 ------
 
 <div id='id-section6'/>
 
-### Page 6: 2017-04-13. Build Transcript and Gene Expression Matrices
+### Page 6: 2017-08-08. Build Transcript and Gene Expression Matrices
 
 Terms:
 

@@ -522,13 +522,25 @@ Terms:
 
 Using the transcript and gene-level abundance estimates for each of your samples, construct a matrix of counts and a matrix of normalized expression values using the following script:
 
-#### For genes
+#### For genes of *Brachypodium* control, drought and freezing
 
 ```
-[aadas@bluemoon-user2 assemblyTrinity2.1.1]$ ~/Bin/trinityrnaseq-2.1.1/util/abundance_estimates_to_matrix.pl --est_method RSEM Brachyleytrum_precold01.genes.results Brachyleytrum_precold02.genes.results Brachyleytrum_precold03.genes.results Brachyleytrum_coldshock01.genes.results Brachyleytrum_coldshock02.genes.results Brachyleytrum_coldshock03.genes.results Brachyleytrum_sixweekcold01.genes.results Brachyleytrum_sixweekcold02.genes.results --out_prefix Brachyleytrum.genes 
+[aadas@bluemoon-user2 rsem_npulBdis]$ ~/Bin/trinityrnaseq-2.1.1/util/abundance_estimates_to_matrix.pl --est_method RSEM Brachypodium_control01.genes.results Brachypodium_control02.genes.results Brachypodium_control03.genes.results Brachypodium_drought01.genes.results Brachypodium_drought02.genes.results Brachypodium_drought03.genes.results Brachypodium_freezing01.genes.results Brachypodium_freezing02.genes.results Brachypodium_freezing03.genes.results --out_prefix Brachypodium.genes 
 ```
 
-#### For isoforms
+#### For genes of *Nassella* control, drought and freezing
+
+```
+~/Bin/trinityrnaseq-2.1.1/util/abundance_estimates_to_matrix.pl --est_method RSEM Nassella_control01.genes.results Nassella_control02.genes.results Nassella_control03.genes.results Nassella_droughtl01.genes.results Nassella_drought02.genes.results Nassella_drought03.genes.results Nassella_freezing01.genes.results Nassella_freezing02.genes.results Nassella_freezing03.genes.results --out_prefix Nassella.genes 
+```
+
+#### For genes of *Brachypodium* and *Nassella* control, drought and freezing
+
+```
+[aadas@bluemoon-user2 rsem_npulBdis]$ ~/Bin/trinityrnaseq-2.1.1/util/abundance_estimates_to_matrix.pl --est_method RSEM Brachypodium_control01.genes.results Brachypodium_control02.genes.results Brachypodium_control03.genes.results Brachypodium_drought01.genes.results Brachypodium_drought02.genes.results Brachypodium_drought03.genes.results Brachypodium_freezing01.genes.results Brachypodium_freezing02.genes.results Brachypodium_freezing03.genes.results Nassella_control01.genes.results Nassella_control02.genes.results Nassella_control03.genes.results Nassella_droughtl01.genes.results Nassella_drought02.genes.results Nassella_drought03.genes.results Nassella_freezing01.genes.results Nassella_freezing02.genes.results Nassella_freezing03.genes.results --out_prefix Brachypodium_Nassella.genes 
+```
+
+#### Now smilar way you can do this for isoforms
 
 ```
 ~/Bin/trinityrnaseq-2.1.1/util/abundance_estimates_to_matrix.pl --est_method RSEM Brachyleytrum_precold01.isoforms.results Brachyleytrum_precold02.isoforms.results Brachyleytrum_precold03.isoforms.results Brachyleytrum_coldshock01.isoforms.results Brachyleytrum_coldshock02.isoforms.results Brachyleytrum_coldshock03.isoforms.results Brachyleytrum_sixweekcold01.isoforms.results Brachyleytrum_sixweekcold02.isoforms.results --out_prefix Brachyleytrum.isoforms
@@ -537,7 +549,7 @@ Using the transcript and gene-level abundance estimates for each of your samples
 #### Counting Numbers of Expressed Transcripts or Genes
 
 ```
-~/Bin/trinityrnaseq-2.1.1/util/misc/count_matrix_features_given_MIN_TPM_threshold.pl \ Brachyleytrum.genes.TPM.not_cross_norm | tee Brachyleytrum.genes.TPM.not_cross_norm.counts_by_min_TPM
+~/Bin/trinityrnaseq-2.1.1/util/misc/count_matrix_features_given_MIN_TPM_threshold.pl \ Brachypodium_Nassella.genes.TPM.not_cross_norm | tee Brachypodium_Nassella.genes.TPM.not_cross_norm.counts_by_min_TPM
 
 ~/Bin/trinityrnaseq-2.1.1/util/misc/count_matrix_features_given_MIN_TPM_threshold.pl \
           trans_matrix.TPM.not_cross_norm | tee trans_matrix.TPM.not_cross_norm.counts_by_min_TPM
@@ -550,7 +562,7 @@ Plotting the number of 'genes' (or 'transcripts') as a function of minimum TPM t
 ```
 setwd("~/Desktop")
 list.files()
-data = read.table("Brachyleytrum.genes.TPM.not_cross_norm.counts_by_min_TPM", header=T)
+data = read.table("Brachypodium_Nassella.genes.TPM.not_cross_norm.counts_by_min_TPM", header=T)
 plot(data, xlim=c(-100,0), ylim=c(0,100000), t='b')
 ```
 
@@ -584,7 +596,7 @@ The linear regression allows us to extrapolate (based on the Y-intercept) that w
 
 <div id='id-section7'/>
 
-### Page 7: 2017-04-14. Differential Expression Analysis
+### Page 7: 2017-08-08. Differential Expression Analysis
 
 First lets get 'R' working
 
@@ -604,26 +616,6 @@ R
  > install.packages('ape')
 ```
 
-### Identifying DE Features: No Biological Replicates 	
-
-### First lets get 'R' working		
-
-```
-module load r-3.3.2-gcc-6.3.0-bmdvb4s
-```
-
-It's very important to have biological replicates to power DE detection and reduce false positive predictions. If you do not have biological replicates, edgeR will allow you to perform DE analysis if you manually set the --dispersion parameter. Values for the **dispersion parameter** must be chosen carefully, and you might begin by exploring values between **0.1 and 0.4**.
-
-now, run edgeR via the helper script provided in the Trinity distribution:
-
-```
-~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix Brachyleytrum.genes.counts.matrix --method edgeR --dispersion 0.1 --output Brachyleytrum_edgeR
-```
-
-**Brachyleytrum_coldshock01_vs_Brachyleytrum_coldshock02**
-
-![alt tag] (https://github.com/aayudh454/Lab-RNA-seq-pipeline-/blob/master/Brachyleytrum.genes.counts.matrix.Brachyleytrum_coldshock01_vs_Brachyleytrum_coldshock02.edgeR.DE_results.MA_n_Volcano.pdf)
-
 ### Identifying DE features: With biological replicates (PREFERRED)
 
 Be sure to have a tab-delimited 'samples_described.txt' file that describes the relationship between samples and replicates. For example:
@@ -631,44 +623,45 @@ Be sure to have a tab-delimited 'samples_described.txt' file that describes the 
 just create a text file and copy paste this
 
 ```
-conditionA   Brachyleytrum_precold01
-conditionA   Brachyleytrum_precold02
-conditionA   Brachyleytrum_precold03
+conditionA   Brachypodium_control01
+conditionA   Brachypodium_control02
+conditionA   Brachypodium_control03
 
-conditionB   Brachyleytrum_coldshock01
-conditionB   Brachyleytrum_coldshock02
-conditionB   Brachyleytrum_coldshock03
+conditionB   Brachypodium_drought01
+conditionB   Brachypodium_drought02
+conditionB   Brachypodium_drought03
 
-conditionC   Brachyleytrum_sixweekcold01
-conditionC   Brachyleytrum_sixweekcold02
+conditionC   Brachypodium_freezing01
+conditionC   Brachypodium_freezing02
+conditionC   Brachypodium_freezing03
+
+conditionD   Nassella_control01
+conditionD   Nassella_control02
+conditionD   Nassella_control03
+
+conditionE   Nassella_droughtl01
+conditionE   Nassella_drought02
+conditionE   Nassella_drought03
+
+conditionF   Nassella_freezing01
+conditionF   Nassella_freezing02
+conditionF   Nassella_freezing03
 ```
 
-#### voom method
+#### Voom method for differential gebe expression
 
 Any of the available methods support analyses containing biological replicates. Here, for example, we again choose voom within the limma package.
 
 ```
-~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix Brachyleytrum.genes.counts.matrix --method voom --samples_file samples_described.txt  
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix Brachypodium_Nassella.genes.counts.matrix --method voom --samples_file samples_described.txt  
 ```
-
-![alt tag](https://github.com/aayudh454/Lab-RNA-seq-pipeline-/blob/master/Brachyleytrum.genes.counts.matrix.conditionA_vs_conditionB.voom.DE_results.MA_n_Volcano.pdf)
-
-### Interactive Volcano and MA Plots using Glimma
-
-The [Glimma](https://bioconductor.org/packages/release/bioc/html/Glimma.html) software provides interactive plots. Generate volcano and MA-plots for any of your pairwise DE analysis results like so:
-
-```
-~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/glimma1.R --samples_file samples_described.txt --DE_results Brachyleytrum.genes.counts.matrix.conditionA_vs_conditionB.voom.DE_results --counts_matrix Brachyleytrum.genes.counts.matrix
-```
-
-### didn't work!
 
 ### Extracting and clustering differentially expressed transcripts
 
 An initial step in analyzing differential expression is to extract those transcripts that are most differentially expressed (most significant FDR and fold-changes) and to cluster the transcripts according to their patterns of differential expression across the samples. 
 
 ```
-~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix Brachyleytrum.genes.counts.matrix -P 1e-3 -C 2 --samples samples_described.txt
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix Brachypodium_Nassella.genes.counts.matrix -P 1e-3 -C 2 --samples samples_described.txt
 ```
 
 you might need to update the q value in library.

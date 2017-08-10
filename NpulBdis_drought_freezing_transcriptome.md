@@ -601,7 +601,7 @@ The linear regression allows us to extrapolate (based on the Y-intercept) that w
 First lets get 'R' working
 
 ```
-q[aadas@bluemoon-user2 ~]$ module load r-3.3.2-gcc-6.3.0-bmdvb4s
+[aadas@bluemoon-user2 ~]$ module load r-3.3.2-gcc-6.3.0-bmdvb4s
 ```
 
 ```
@@ -698,6 +698,80 @@ There are three different methods for partitioning genes into clusters:
 ```
 
 
+
+### Now only Brachypodium
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix Brachypodium.genes.counts.matrix --method voom --samples_file samples_described.txt  
+```
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix Brachypodium.genes.counts.matrix -P 1e-2 -C 2 --samples samples_described.txt
+```
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl -R diffExpr.P1e-2_C2.matrix.RData --Ptree 60
+```
+
+### Now only Nassella
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix Nassella.genes.counts.matrix --method voom --samples_file samples_described.txt  
+```
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix Nassella.genes.counts.matrix -P 1e-3 -C 2 --samples samples_described.txt
+```
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix Nassella.genes.counts.matrix -P 1e-2 -C 2 --samples samples_described.txt
+```
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl -R diffExpr.P1e-3_C2.matrix.RData --Ptree 60
+```
+
+#### Nassella vs Brachypodium control-drought
+
+```
+[aadas@bluemoon-user2 rsem_npulBdis]$ ~/Bin/trinityrnaseq-2.1.1/util/abundance_estimates_to_matrix.pl --est_method RSEM Brachypodium_control01.genes.results Brachypodium_control02.genes.results Brachypodium_control03.genes.results Brachypodium_drought01.genes.results Brachypodium_drought02.genes.results Brachypodium_drought03.genes.results  Nassella_control01.genes.results Nassella_control02.genes.results Nassella_control03.genes.results Nassella_droughtl01.genes.results Nassella_drought02.genes.results Nassella_drought03.genes.results --out_prefix BrachypodiumNassella_DroughtControl.genes 
+```
+
+just create a text file and copy paste this
+
+```
+conditionA   Brachypodium_control01
+conditionA   Brachypodium_control02
+conditionA   Brachypodium_control03
+
+conditionB   Brachypodium_drought01
+conditionB   Brachypodium_drought02
+conditionB   Brachypodium_drought03
+
+conditionD   Nassella_control01
+conditionD   Nassella_control02
+conditionD   Nassella_control03
+
+conditionE   Nassella_droughtl01
+conditionE   Nassella_drought02
+conditionE   Nassella_drought03
+```
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix BrachypodiumNassella_DroughtControl.genes.counts.matrix --method voom --samples_file samples_described.txt
+```
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix BrachypodiumNassella_DroughtControl.genes.counts.matrix -P 1e-3 -C 2 --samples samples_described.txt
+```
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix BrachypodiumNassella_DroughtControl.genes.counts.matrix -P 1e-3 -C 2 --samples samples_described.txt
+```
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl -R diffExpr.P1e-3_C2.matrix.RData --Ptree 60
+```
 
 
 

@@ -616,7 +616,7 @@ R
  > install.packages('ape')
 ```
 
-### Identifying DE features: With biological replicates (PREFERRED)
+### 1. Identifying DE features: With biological replicates (PREFERRED)
 
 Be sure to have a tab-delimited 'samples_described.txt' file that describes the relationship between samples and replicates. For example:
 
@@ -656,9 +656,9 @@ Any of the available methods support analyses containing biological replicates. 
 ~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix Brachypodium_Nassella.genes.counts.matrix --method voom --samples_file samples_described.txt  
 ```
 
-### Extracting and clustering differentially expressed transcripts
+### 2. Extracting and clustering differentially expressed transcripts (HEATMAP)
 
-An initial step in analyzing differential expression is to extract those transcripts that are most differentially expressed (most significant FDR and fold-changes) and to cluster the transcripts according to their patterns of differential expression across the samples. 
+An initial step in analyzing differential expression is to extract those transcripts that are most differentially expressed (most significant FDR and fold-changes) and to cluster the transcripts according to their patterns of differential expression across the samples. You should do this **inside the voom folder**. 
 
 ```
 ~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix Brachypodium_Nassella.genes.counts.matrix -P 1e-3 -C 2 --samples samples_described.txt
@@ -667,6 +667,23 @@ An initial step in analyzing differential expression is to extract those transcr
 you might need to update the q value in library.
 
 which will extract all genes that have P-values at most 1e-3 and are at least 2^2 fold differentially expressed. For each of the earlier pairwise DE comparisons, this step will generate the following files:
+
+if it's more than 10000 diff genes-
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix Brachypodium_Nassella.genes.counts.matrix -P 1e-3 -C 2 --samples samples_described.txt --max_genes_clust 50000
+```
+
+### 3. Automatically Partitioning Genes into Expression Clusters
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl \
+                                    -R diffExpr.P1e-6_C7.1.matrix.RData --Ptree 60
+```
+
+You should do this **inside the voom folder**. 
+
+
 
 ## Gene Ontology (GO) Enrichment Analysis on Differentially Expressed Genes
 
@@ -680,7 +697,7 @@ There are three different methods for partitioning genes into clusters:
 ~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl -R diffExpr.P1e-3_C2.matrix.RData --Ptree 60
 ```
 
-A directory will be created called: 'diffExpr.P0.001_C2.matrix.RData.clusters_fixed_P_60' that contains the expression matrix for each of the clusters (log2-transformed, median centered). A summary pdf file is provided as 'my_cluster_plots.pdf' that shows the expression patterns for the genes in each cluster. Each gene is plotted (gray) in addition to the mean expression profile for that cluster (blue), as shown below:
+
 
 
 

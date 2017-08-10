@@ -1,0 +1,2 @@
+id	logFC	logCPM	PValue	FDR	Brachypodium_control01	Brachypodium_control02	Brachypodium_control03	Brachypodium_drought01	Brachypodium_drought02	Brachypodium_drought03	Brachypodium_freezing01	Brachypodium_freezing02	Brachypodium_freezing03
+TRINITY_DN22819_c0_g2	-7.32452241136111	2.64038901736915	3.82912689305197e-08	0.000557492157176669	54.82	65.82	201.92	0.00	0.00	1.00	513.09	997.63	1099.00

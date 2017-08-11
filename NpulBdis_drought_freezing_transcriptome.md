@@ -762,7 +762,7 @@ conditionE   Nassella_drought03
 ```
 
 ```
-~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix BrachypodiumNassella_DroughtControl.genes.counts.matrix -P 1e-3 -C 2 --samples samples_described.txt
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix BrachypodiumNassella_DroughtControl.genes.counts.matrix -P 1e-2 -C 2 --samples samples_described.txt
 ```
 
 ```
@@ -779,19 +779,86 @@ conditionE   Nassella_drought03
 
 <div id='id-section8'/>
 
-### Page 8: 2017-04-25. Coding Region Identification in Trinity Assemblies
+### Page 8: 2017-08-11. Gene Annotation with blastP
 
 Follow this link-http://transdecoder.github.io/
 
-The *TransDecoder* utility is run on a fasta file containing the target transcript sequences. The simplest usage is as follows:
+The *TransDecoder* utility is run on a fasta file containing the target transcript sequences. The simplest usage is as follows: Install it first!
 
-Step 1: extract the **long open reading frames**
+#### Install blast
+
+go to-ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/  
+
+Download **linux.tar.gz**
 
 ```
-[aadas@bluemoon-user2 annotation]$ /users/a/a/aadas/Bin/TransDecoder-3.0.1/TransDecoder.LongOrfs -t Brachyleytrum_trinityv211.fasta
+$ export PATH=$PATH:/users/a/a/aadas/Bin/ncbi-blast-2.6.0+/bin
 ```
 
-Step 2 predict the **likely coding regions**
+#### Install databases
+
+- UniProt is another protein database that is highly currated and combines the Swiss-Prot, TrEMBL and PIR-PSD databases.  Each protein has a unique uniprot ID that is associated with a wealth of other information, including Gene Ontology GO categories. See the documentation for more information [http://www.uniprot.org/help/uniref](http://www.uniprot.org/help/uniref). The various databases can be downloaded from here using ftp or wget [http://www.ebi.ac.uk/uniprot/database/download.html](http://www.ebi.ac.uk/uniprot/database/download.html). 
+
+```
+[aadas@bluemoon-user2 uniprot]$ makeblastdb -in uniprot_sprot.pep -dbtype prot
+```
+
+Search the peptides for protein domains using Pfam. This requires [hmmer3](http://hmmer.janelia.org/) and [Pfam](ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz) databases to be installed.
+
+**Briefly, to compile HMMER from source:**
+
+```
+  % tar zxvf hmmer-3.1b2-linux-intel-x86_64.tar.gz
+  % cd hmmer-3.1b2
+  % ./configure
+  % make
+  % make check
+```
+
+**Pfam-**
+
+Uncompress and prepare the Pfam database for use with *hmmscan* like so:
+
+```
+gunzip Pfam-A.hmm.gz
+hmmpress Pfam-A.hmm
+```
+
+```
+export PATH=$PATH:/users/a/a/aadas/Bin/hmmer-3.1b2-linux-intel-x86_64/binaries
+
+hmmscan --cpu 8 --domtblout pfam.domtblout /users/a/a/aadas/Bin/Pfam-A.hmm /users/a/a/aadas/annotation/long_ORF/longest_orfs.pep
+```
+
+
+
+### Step 1: extract the long open reading frames by Transdecoder
+
+```
+#!/bin/bash
+
+#PBS -N out.transDecoder-step1
+#PBS -l nodes=1:ppn=4,pmem=10G,pvmem=12g
+#PBS -j oe
+#PBS -l walltime=10:00:00
+#PBS -M aadas@uvm.edu
+#PBS -m bea
+
+export PATH="/users/a/a/aadas/Bin/TransDecoder-3.0.1/transdecoder_plugins/cdhit:$PATH"
+export PATH="/users/a/a/aadas/Bin/TransDecoder-3.0.1:$PATH"
+export PATH="/users/a/a/aadas/Bin/hmmer-3.1b2-linux-intel-x86_64/binaries:$PATH"
+export PATH="/users/a/a/aadas/Bin/ncbi-blast-2.6.0+/bin:$PATH"
+
+transDecoder_dir=/users/a/a/aadas/Bin/TransDecoder-3.0.1
+INPUT_DIR=/users/a/a/aadas/nassellaBrachy_drought_freezing/blastP
+cd $INPUT_DIR
+
+$transDecoder_dir/TransDecoder.LongOrfs -t $INPUT_DIR/npulBdis_Trinity211.fasta
+```
+
+
+
+Step 2 
 
 ```
 /users/a/a/aadas/Bin/TransDecoder-3.0.1/TransDecoder.Predict -t Brachyleytrum_trinityv211.fasta
@@ -862,58 +929,6 @@ blastp -query /users/a/a/aadas/annotation/long_ORF/longest_orfs.pep \
 ```
 
 ### Pfam Search
-
-Search the peptides for protein domains using Pfam. This requires [hmmer3](http://hmmer.janelia.org/) and [Pfam](ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz) databases to be installed.
-
-**Briefly, to compile HMMER from source:**
-
-```
-  % tar zxvf hmmer-3.1b2-linux-intel-x86_64.tar.gz
-  % cd hmmer-3.1b2
-  % ./configure
-  % make
-  % make check
-```
-
-**Pfam-**
-
-Uncompress and prepare the Pfam database for use with *hmmscan* like so:
-
-```
-gunzip Pfam-A.hmm.gz
-hmmpress Pfam-A.hmm
-```
-
-```
-
-export PATH=$PATH:/users/a/a/aadas/Bin/hmmer-3.1b2-linux-intel-x86_64/binaries
-
-hmmscan --cpu 8 --domtblout pfam.domtblout /users/a/a/aadas/Bin/Pfam-A.hmm /users/a/a/aadas/annotation/long_ORF/longest_orfs.pep
-```
-
-### Step 1
-
-```
-#!/bin/bash
-
-#PBS -N out.transDecoder-step1
-#PBS -l nodes=1:ppn=4,pmem=10G,pvmem=12g
-#PBS -j oe
-#PBS -l walltime=10:00:00
-#PBS -M aadas@uvm.edu
-#PBS -m bea
-
-export PATH="/users/a/a/aadas/Bin/TransDecoder-3.0.1/transdecoder_plugins/cdhit:$PATH"
-export PATH="/users/a/a/aadas/Bin/TransDecoder-3.0.1:$PATH"
-export PATH="/users/a/a/aadas/Bin/hmmer-3.1b2-linux-intel-x86_64/binaries:$PATH"
-export PATH="/users/a/a/aadas/Bin/ncbi-blast-2.6.0+/bin:$PATH"
-
-transDecoder_dir=/users/a/a/aadas/Bin/TransDecoder-3.0.1
-INPUT_DIR=/users/a/a/aadas/blast_Brachyleytrum
-cd $INPUT_DIR
-
-$transDecoder_dir/TransDecoder.LongOrfs -t $INPUT_DIR/Brachyleytrum_trinityv211.fasta
-```
 
 ### Step 2 (run two scripts)
 
@@ -1136,7 +1151,7 @@ Run-
 ./run_blastp_hmmscan.sh
 ```
 
-### Final step
+### Final step: predict the **likely coding regions**
 
 ```
 #!/bin/bash

@@ -11,19 +11,19 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 **Method for sequencing:** Single eneded and stranded sequencing.
 
 ## Table of contents    
-* [Page 1: 2017-08-05](#id-section1). Moving files and trimming 
+* [Page 1: 2017-08-05](#id-section1). Moving files and trimming by Trimmomatic-0.36
 
-* [Page 2: 2017-08-05](#id-section2). Trimming by Trimmomatic-0.36
+* [Page 2: 2017-08-05](#id-section2). Trimming for all files and Concatenation
 
 * [Page 3 2017-08-06](#id-section3). Assembly by Trinity 2.1.1
 
-* [Page 4 2017-03-28](#id-section4). Transcript quantification by RSEM 
+* [Page 4 2017-08-07](#id-section4). Transcript quantification by RSEM 
 
-* [Page 5 2017-04-11](#id-section5). Build Transcript and Gene Expression Matrices
+* [Page 5 2017-08-08](#id-section5). Build Transcript and Gene Expression Matrices
 
-* [Page 6 2017-04-13](#id-section6). Differential Expression Analysis
+* [Page 6 2017-08-08](#id-section6). Differential Expression Analysis (DeSeq2)
 
-* [Page 7 2017-04-14](#id-section7). Coding Region Identification in Trinity Assemblies
+* [Page 7 2017-04-14](#id-section7). Gene Annotation with blastP
 
 * [Page 8 2017-04-25](#id-section8). Principal Component Analysis (PCA)
 
@@ -33,7 +33,7 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 
 ------
 <div id='id-section1'/>
-###Page 1: 2017-08-05. Moving files and trimming
+###Page 1: 2017-08-05. Moving files and trimming by Trimmomatic-0.36
 
 #### 1. Where are our files?
 
@@ -510,9 +510,9 @@ Do this for all replicates!
 
 ------
 
-<div id='id-section6'/>
+<div id='id-section5'/>
 
-### Page 6: 2017-08-08. Build Transcript and Gene Expression Matrices
+### Page 5: 2017-08-08. Build Transcript and Gene Expression Matrices
 
 Terms:
 
@@ -566,10 +566,6 @@ data = read.table("Brachypodium_Nassella.genes.TPM.not_cross_norm.counts_by_min_
 plot(data, xlim=c(-100,0), ylim=c(0,100000), t='b')
 ```
 
-![alt tag](https://github.com/aayudh454/Lab-RNA-seq-pipeline-/blob/master/Rplot.tiff)
-
-![Rplot](/Users/aayudhdas/Desktop/Lab-RNA-seq-pipeline-/Rplot.tiff)
-
 ```
 # extract the data between 10 TPM and 100 TPM
 filt_data = data[data[,1] > -100 & data[,1] < -10,] 
@@ -588,15 +584,13 @@ Coefficients:
 abline(fit, col='green', lwd=3)
 ```
 
-![Rplot01](/Users/aayudhdas/Desktop/Lab-RNA-seq-pipeline-/Rplot01.tiff)
-
 The linear regression allows us to extrapolate (based on the Y-intercept) that we have 19361 'genes', which is a far better guess than our count of 52,624 'genes' having at least 1 TPM in any sample, and certainly better than the 1.4 million 'genes' that were assembled. 
 
 ------
 
-<div id='id-section7'/>
+<div id='id-section6'/>
 
-### Page 7: 2017-08-08. Differential Expression Analysis
+### Page 6: 2017-08-08. Differential Expression Analysis (DeSeq2)
 
 First lets get 'R' working
 
@@ -676,17 +670,6 @@ if it's more than 10000 diff genes-
 
 ### 3. Automatically Partitioning Genes into Expression Clusters
 
-```
-~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl \
-                                    -R diffExpr.P1e-6_C7.1.matrix.RData --Ptree 60
-```
-
-You should do this **inside the voom folder**. 
-
-
-
-## Gene Ontology (GO) Enrichment Analysis on Differentially Expressed Genes
-
 There are three different methods for partitioning genes into clusters:
 
 - use K-means clustering to define K gene sets. (use the -K parameter). This does not leverage the already hierarchically clustered genes as shown in the heatmap, and instead uses a least-sum-of-squares method to define exactly k gene clusters.
@@ -694,7 +677,17 @@ There are three different methods for partitioning genes into clusters:
 - (Recommended) cut the hierarchically clustered gene tree at --Ptree percent height of the tree.
 
 ```
-~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl -R diffExpr.P1e-3_C2.matrix.RData --Ptree 60
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl \
+                                    -R diffExpr.P1e-6_C7.1.matrix.RData --Ptree 60
+```
+
+You should do this **inside the voom folder**. 
+
+### 4. Principal Component Analysis (PCA)
+
+```
+~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/PtR --matrix Brachypodium_Nassella.genes.counts.matrix \
+    -s samples_described.txt --log2 --prin_comp 3
 ```
 
 
@@ -771,6 +764,124 @@ conditionE   Nassella_drought03
 
 ```
 ~/Bin/trinityrnaseq-2.1.1/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl -R diffExpr.P1e-3_C2.matrix.RData --Ptree 60
+```
+
+### Extended version of Deseq analysis in R
+
+```
+setwd("~/Dropbox/Aayudh PhD/Brachy_Npul_transcriptomics")
+list.files()
+library("DESeq2")
+library("ggplot2")
+
+countsTable <- read.delim('Brachypodium_Nassella.genes.counts.matrix.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
+countData=as.matrix(countsTable)
+storage.mode(countData) = "integer"
+head(countData)
+
+conds <- read.delim("colsData_all.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
+head(conds)
+colData <- as.data.frame(conds)
+head(colData)
+dim(countData)
+dim(colData)
+#subset
+colData_BrachyCvsD = colData[1:6,]
+colData_BrachyCvsD
+dim(countData)
+dim(colData_BrachyCvsD)
+countData_BrachyCvsD = countData[,1:6]
+storage.mode(countData_BrachyCvsD) = "integer"
+dim(countData_BrachyCvsD)
+dim(colData_BrachyCvsD)
+#model 
+dds <- DESeqDataSetFromMatrix(countData = countData_BrachyCvsD,
+                              colData = colData_BrachyCvsD,
+                              design = ~ cond)
+dds
+dim(dds)
+# Filtering to remove rows with 0 reads
+dds <- dds[ rowSums(counts(dds)) > 1, ]
+dim(dds)
+dds <- DESeq(dds) 
+res <- results(dds)
+#sorts according to pvalue
+res <- res[order(res$padj),]
+#Subsetting based on pvalue
+x.sub <- subset(res, padj < 0.01)
+head(x.sub)
+sub_data=as.data.frame(x.sub)
+write.csv(sub_data, file = "Brachypodium_ControlvsDrought.csv", row.names = T, quote = F)
+
+head(res)
+summary(res)
+#MA plot
+plotMA(res, main="Brachypodium:Control vs Drought", ylim=c(-5,7), xlim=c(1e+02, 1e+04))
+#dispersion
+plotDispEsts( dds, ylim = c(1e-4, 1e+1), xlim = c(1e+1, 1e+5) )
+hist( res$pvalue, breaks=20, col="grey" )
+#rlog transform
+rld <- rlog( dds )
+head( assay(rld) )
+par( mfrow = c( 1, 2 ) )
+plot( log2( 1+counts(dds, normalized=TRUE)[, 1:2] ), col="#00000020", pch=20, cex=0.3 )
+plot( assay(rld)[, 1:2], col="#00000020", pch=20, cex=0.3 )
+sampleDists <- dist(t(assay(rld)))
+sampleDists
+#Heatmap
+sampleDistMatrix <- as.matrix( sampleDists )
+rownames(sampleDistMatrix) <- paste( rld$treatment,
+                                     rld$patient, sep="-" )
+colnames(sampleDistMatrix) <- NULL
+library( "gplots" )
+library( "RColorBrewer" )
+colours = colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+heatmap.2( sampleDistMatrix, trace="none", col=colours)
+#gene clustering heatmap
+library( "genefilter" )
+topVarGenes <- head( order( rowVars( assay(rld) ), decreasing=TRUE ), 35 )
+heatmap.2( assay(rld)[ topVarGenes, ], scale="row",margin=c(5,10),
+           trace="none", dendrogram="column",
+           offsetRow = 0.25, cexRow=0.6,
+           col = colorRampPalette( rev(brewer.pal(9, "RdBu")) )(255))
+
+heatmap.2(assay(rld)[ topVarGenes, ],Colv=FALSE,dendrogram="row",scale="row",
+          col=cm.colors(256),trace="none", margin=c(5,10), 
+          lwid=c(1.5,2.0),
+          keysize=1, offsetRow = 0.25, cexRow=0.6)
+#Plot counts
+d <- plotCounts(dds, gene="TRINITY_DN139561_c0_g1", intgroup=(c("cond", "rep")), returnData=TRUE)
+d
+p <- ggplot(d, aes(x= cond, y=count, shape = cond, color=cond)) + 
+  theme_minimal() + theme(text = element_text(size=20), 
+                          panel.grid.major = element_line(colour = "grey"))
+p <- p + geom_point(position=position_jitter(w=0.3,h=0), size = 3) 
+p
+
+#Effects of transformations on the variance(http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#plot-counts)
+ntd <- normTransform(dds)
+library("vsn")
+meanSdPlot(assay(ntd))
+rld <- rlog(dds, blind=FALSE)
+meanSdPlot(assay(rld))
+#PCA
+vsd <- varianceStabilizingTransformation(dds, blind=FALSE)
+plotPCA(vsd, intgroup=c("cond"))
+#PCA2
+ramp <- 1:3/3
+cols <- c(rgb(ramp, 0, 0),
+          rgb(0, ramp, 0),
+          rgb(0, 0, ramp),
+          rgb(ramp, 0, ramp))
+print( plotPCA( rld, intgroup = c( "cond"), col=cols ) )
+## Normalizing using the method for an object of class"CountDataSet" 
+dds.norm <-  estimateSizeFactors(dds)
+sizeFactors(dds.norm)
+## Performing estimation of dispersion parameter
+dds.disp <- estimateDispersions(dds.norm)
+plotDispEsts(dds.disp)
+
+
 ```
 
 
@@ -950,7 +1061,7 @@ my $help;
 my $input_dir=`pwd`;
 my $blast_dir="/users/a/a/aadas/Bin/ncbi-blast-2.6.0+/bin";
 my $hmm_dir="/users/a/a/aadas/Bin/hmmer-3.1b2-linux-intel-x86_64/binaries";
-my $hmmDB_dir="/users/a/a/aadas/blast_Brachyleytrum/database";
+my $hmmDB_dir="/users/a/a/aadas/blastp_Brachyleytrum/database";
 my $hmm="hmmscan";
 my $hmmoutputDir="hmmscan_out";
 GetOptions(
@@ -1133,10 +1244,10 @@ Then (**When you run the 3rd script; generally it's submitting 300 jobs to VACC 
 #!/bin/bash
 cd `pwd`
 
-perl batch_blastp_hmmscan.pl -q Brachyleytrum_trinityv211.fasta.transdecoder_dir/longest_orfs.pep -p blastp -d /users/a/a/aadas/blast_Brachyleytrum/database/uniprot_sprot.pep
+perl batch_blastp_hmmscan.pl -q /users/a/a/aadas/nassellaBrachy_drought_freezing/blastP/npulBdis_Trinity211.fasta.transdecoder_dir/longest_orfs.pep -p blastp -d /users/a/a/aadas/blast_Brachyleytrum/database/uniprot_sprot.pep
 
 chmod 700 *.sh
-for i in blastp-part*; do
+for i in blastp-part-2*; do
   qsub $i &
 done
 
@@ -1212,104 +1323,6 @@ The --prin_comp 3 indicates that the first three principal components will be pl
 If you have replicates that are clear outliers, you might consider removing them from your study as potential confounders. If it's clear that you have a [batch effect](http://www.nature.com/nrg/journal/v11/n10/full/nrg2825.html), you'll want to eliminate the batch effect during your downstream analysis of differential expression.
 
 ------------------
-
-<div id='id-section10'/>
-
-### Page 10: 2017-10-02. Orthofinder setup
-
-https://github.com/davidemms/OrthoFinder
-
-#### some tips (If you want to upload a fle from desktop)
-
-first cd to Desktop
-
-```
-AAYUDHs-MacBook-Air:Desktop aayudhdas$ scp fastme-2.1.5.tar.gz aadas@bluemoon-user2.uvm.edu:~/Bin
-```
-
-#### 1. Get **MCL-edge software **
-
-https://micans.org/mcl/
-
-After you tar -zxvf
-
-```
-cd mcl-12-068
-./configure --prefix=$HOME/local
-make install
-```
-
-#### 2. FastME 2.0
-
-```
-./configure
-make
-```
-
-
-
-#### 3. DLCpar
-
-https://www.cs.hmc.edu/~yjw/software/dlcpar/
-
-
-
--------
-
-### Extra
-
-Follow this link-http://trinotate.github.io/
-
-Trinotate **relies heavily on SwissProt and Pfam**, and custom protein files are generated as described below to be specifically used with Trinotate. You can obtain the protein database files by running this Trinotate build process. This step will download several data resources including the latest version of swissprot, pfam, and other companion resources, create and populate a Trinotate boilerplate sqlite database (Trinotate.sqlite), and yield *uniprot_sprot.pep* file to be used with BLAST, and the *Pfam-A.hmm.gz* file to be used for Pfam searches. Run the build process like so:
-
-```
-[aadas@bluemoon-user2 Trinotate-3.0.2]$ ~/Bin/Trinotate-3.0.2/admin/Build_Trinotate_Boilerplate_SQLite_db.pl Trinotate
-```
-
-and once it completes, it will provide to you:
-
-```
-Trinotate.sqlite
-uniprot_sprot.pep
-Pfam-A.hmm.gz
-```
-
-Prepare the protein database for blast searches by:	
-
-```
-[aadas@bluemoon-user2 Trinotate-3.0.2]$ ~/Bin/Trinotate-3.0.2/admin/Build_Trinotate_Boilerplate_SQLite_db.pl makeblastdb -in uniprot_sprot.pep -dbtype prot
-```
-
-script to do the analysis
-
-```
-#!/bin/bash
-
-######## This job needs 1 nodes, 4 processors total
-#PBS -l nodes=1:ppn=4,pmem=8gb,pvmem=9gb
-#PBS -l walltime=30:00:00
-#PBS -N blastp
-#PBS -j oe
-#PBS -M aadas@uvm.edu
-#PBS -m bea
-
-# This single line using the blastp command below will compare your transcript fasta file
-# (-query) to the already formatted uniref90 database (-db).
-# You can enter 'blastp --help' for a list of the parameters.
-# We choose the tab-delimited output format (6) and to only help the top hit (-max_target_seqs)
-# and only if it has a minimum evalue of 0.001.
-
-export PATH="/users/a/a/aadas/Bin/ncbi-blast-2.6.0+/bin:$PATH"
-
-blastp -query /users/a/a/aadas/annotation/blastp/Brachyleytrum_orfs.pep \
-       -db /users/a/a/aadas/annotation/blastp/uniprot_sprot.pep \
-       -out /users/a/a/aadas/annotation/blastp/blastp_vs_uniprot.outfmt6 \
-       -outfmt 6 \
-       -evalue 1e-3 \
-       -max_target_seqs 1
-```
-
-
 
 
 

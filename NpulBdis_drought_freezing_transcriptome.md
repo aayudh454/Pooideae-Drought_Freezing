@@ -771,35 +771,27 @@ conditionE   Nassella_drought03
 ### Extended version of Deseq analysis in R
 
 ```
-setwd("~/Dropbox/Aayudh PhD/Brachy_Npul_transcriptomics")
+setwd("~/Dropbox/Aayudh PhD/Brachy_Npul_transcriptomics/BrachypodiumvsNassella_Freezing")
 list.files()
 library("DESeq2")
 library("ggplot2")
 
 countsTable <- read.delim('Brachypodium_Nassella.genes.counts.matrix.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
-countData=as.matrix(countsTable)
+countData=as.matrix(countsTable[,c(7,8,9,16,17,18)])
 storage.mode(countData) = "integer"
 head(countData)
 
 conds <- read.delim("colsData_all.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
 head(conds)
-colData <- as.data.frame(conds)
+colData <- as.data.frame(conds[c(7,8,9,16,17,18),])
 head(colData)
+
 dim(countData)
 dim(colData)
-#subset
-colData_BrachyCvsD = colData[1:6,]
-colData_BrachyCvsD
-dim(countData)
-dim(colData_BrachyCvsD)
-countData_BrachyCvsD = countData[,1:6]
-storage.mode(countData_BrachyCvsD) = "integer"
-dim(countData_BrachyCvsD)
-dim(colData_BrachyCvsD)
 #model 
-dds <- DESeqDataSetFromMatrix(countData = countData_BrachyCvsD,
-                              colData = colData_BrachyCvsD,
-                              design = ~ cond)
+dds <- DESeqDataSetFromMatrix(countData = countData,
+                              colData = colData,
+                              design = ~ pop)
 dds
 dim(dds)
 # Filtering to remove rows with 0 reads
@@ -809,27 +801,50 @@ dds <- DESeq(dds)
 res <- results(dds)
 #sorts according to pvalue
 res <- res[order(res$padj),]
-#Subsetting based on pvalue
-x.sub <- subset(res, padj < 0.01)
-head(x.sub)
-sub_data=as.data.frame(x.sub)
-write.csv(sub_data, file = "Brachypodium_ControlvsDrought.csv", row.names = T, quote = F)
-
 head(res)
 summary(res)
+summary(sub_data)
+#Subsetting based on pvalue 0.01
+x.sub <- subset(res, padj < 0.01)
+sub_data=as.data.frame(x.sub)
+y.sub <- subset(res, pvalue < 0.001)
+y.sub1 = as.data.frame(y.sub)
+z.sub <- subset(res, padj < 0.0001)
+z.sub1 =  as.data.frame(z.sub)
+#Up and Downregulated genes
+table(sign(y.sub1$log2FoldChange))
+#save as csv
+write.csv(z.sub1, file = "z.sub1.csv")
+
 #MA plot
-plotMA(res, main="Brachypodium:Control vs Drought", ylim=c(-5,7), xlim=c(1e+02, 1e+04))
+plotMA(res, main="Freezing in Brachypodium and Nassella", ylim=c(-12,12), xlim=c(1e-01, 1e+04))
+abline(h=c(-1:1), col="red")
+#Volcano plot
+volcanoData <- as.data.frame(sub_data[,c(2,5,6)])
+with(volcanoData, plot(log2FoldChange, -log10(pvalue), pch=20,lwd=4, main="Volcano plot", xlim=c(-15,15), ylim = c(2,20)))
+# Add colored points: red if padj<0.05, orange of log2FC>1, green if both)
+with(subset(volcanoData, padj<.001 ), points(log2FoldChange, -log10(pvalue), pch=20, col="red"))
+with(subset(volcanoData, abs(log2FoldChange)>5), points(log2FoldChange, -log10(pvalue), pch=20, col="orange"))
+with(subset(volcanoData, padj<.001 & abs(log2FoldChange)>5), points(log2FoldChange, -log10(pvalue), pch=20, col="green"))
+with(subset(volcanoData, padj<.0001 & abs(log2FoldChange)>5), points(log2FoldChange, -log10(pvalue), pch=20, col="blue"))
+legend( x="topright", 
+        legend=c("padj<0.001 and log2(FC)>5","log2(FC)>5","padj<0.001","padj<0.01 and log2(FC)>2"), 
+        col=c("green","orange","red","black"), lwd=4, lty=c(NA,NA,NA,NA), 
+        pch=c(20,20,20,20), merge=FALSE, cex = 0.75)
+
 #dispersion
 plotDispEsts( dds, ylim = c(1e-4, 1e+1), xlim = c(1e+1, 1e+5) )
-hist( res$pvalue, breaks=20, col="grey" )
+hist( res$pvalue, breaks=20, col="blue")
+
 #rlog transform
-rld <- rlog( dds )
+rld <- rlog(dds)
 head( assay(rld) )
 par( mfrow = c( 1, 2 ) )
 plot( log2( 1+counts(dds, normalized=TRUE)[, 1:2] ), col="#00000020", pch=20, cex=0.3 )
 plot( assay(rld)[, 1:2], col="#00000020", pch=20, cex=0.3 )
 sampleDists <- dist(t(assay(rld)))
 sampleDists
+
 #Heatmap
 sampleDistMatrix <- as.matrix( sampleDists )
 rownames(sampleDistMatrix) <- paste( rld$treatment,
@@ -839,25 +854,29 @@ library( "gplots" )
 library( "RColorBrewer" )
 colours = colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
 heatmap.2( sampleDistMatrix, trace="none", col=colours)
+
 #gene clustering heatmap
-library( "genefilter" )
+library("genefilter")
 topVarGenes <- head( order( rowVars( assay(rld) ), decreasing=TRUE ), 35 )
-heatmap.2( assay(rld)[ topVarGenes, ], scale="row",margin=c(5,10),
+heat_data=as.data.frame(x.sub[,c(2)])
+heatmap.2(heat_data, scale="row",margin=c(5,10),
            trace="none", dendrogram="column",
            offsetRow = 0.25, cexRow=0.6,
            col = colorRampPalette( rev(brewer.pal(9, "RdBu")) )(255))
 
-heatmap.2(assay(rld)[ topVarGenes, ],Colv=FALSE,dendrogram="row",scale="row",
+heatmap.2(heat_data,Colv=FALSE,dendrogram="row",scale="row",
           col=cm.colors(256),trace="none", margin=c(5,10), 
           lwid=c(1.5,2.0),
           keysize=1, offsetRow = 0.25, cexRow=0.6)
+
 #Plot counts
-d <- plotCounts(dds, gene="TRINITY_DN139561_c0_g1", intgroup=(c("cond", "rep")), returnData=TRUE)
+head(x.sub)
+d <- plotCounts(dds, gene="TRINITY_DN71934_c3_g1", intgroup=(c("pop", "rep", "cond")), returnData=TRUE)
 d
-p <- ggplot(d, aes(x= cond, y=count, shape = cond, color=cond)) + 
+p <- ggplot(d, aes(x= cond, y=count, shape = pop, color=pop)) + 
   theme_minimal() + theme(text = element_text(size=20), 
                           panel.grid.major = element_line(colour = "grey"))
-p <- p + geom_point(position=position_jitter(w=0.3,h=0), size = 3) 
+p <- p + geom_point(position=position_jitter(w=0.3,h=0), size = 3) + labs(title = "TRINITY_DN71934_c3_g1") 
 p
 
 #Effects of transformations on the variance(http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#plot-counts)
@@ -866,9 +885,11 @@ library("vsn")
 meanSdPlot(assay(ntd))
 rld <- rlog(dds, blind=FALSE)
 meanSdPlot(assay(rld))
+
 #PCA
 vsd <- varianceStabilizingTransformation(dds, blind=FALSE)
-plotPCA(vsd, intgroup=c("cond"))
+plotPCA(vsd, intgroup=c("pop"))
+
 #PCA2
 ramp <- 1:3/3
 cols <- c(rgb(ramp, 0, 0),
@@ -876,13 +897,35 @@ cols <- c(rgb(ramp, 0, 0),
           rgb(0, 0, ramp),
           rgb(ramp, 0, ramp))
 print( plotPCA( rld, intgroup = c( "cond"), col=cols ) )
+
 ## Normalizing using the method for an object of class"CountDataSet" 
 dds.norm <-  estimateSizeFactors(dds)
 sizeFactors(dds.norm)
+
 ## Performing estimation of dispersion parameter
 dds.disp <- estimateDispersions(dds.norm)
 plotDispEsts(dds.disp)
 
+#Distributions
+head(summary(countData[,1:6]))
+epsilon <- 1
+table(colData$pop)
+col.strain <- c("Brachypodium"="green","Nassella"="orange") 
+colData$color <- col.strain[as.vector(colData$pop)]
+boxplot(log2(countData + epsilon), col=colData$color, pch=".", 
+        horizontal=TRUE, cex.axis=0.5,
+        las=1, ylab="Samples", xlab="log2(Counts +1)")
+
+## Density
+## We will require one function from the affy package
+if(!require("affy")){
+  source("http://bioconductor.org/biocLite.R")
+  biocLite("affy")  
+}
+library(affy)
+plotDensity(log2(countData + epsilon), lty=1, col=colData$color, lwd=2)
+grid()
+legend("topright", legend=names(col.strain), col=col.strain, lwd=2)
 
 ```
 

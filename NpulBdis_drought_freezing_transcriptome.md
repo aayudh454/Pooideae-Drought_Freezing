@@ -1302,7 +1302,7 @@ $transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/Brachyleytrum_trinityv211.f
 
 <div id='id-section9'/>
 
-### Page 9: 2017-08-16. Conserved freezing gene analysis
+### Page 9: 2017-08-16. Conserved freezing gene (Bdis and Npul) analysis
 
 R code
 
@@ -1349,6 +1349,9 @@ dim(BD1_CvsF)
 table(sign(BD1_CvsF$log2FoldChange))
 write.csv(BD1_CvsF, file = "BD_CvsF_pvalu0.01.csv")
 #clear your environment
+
+# Write ID in the csv file manually
+
 #Nassella pulchra
 countsTable <- read.delim('Brachypodium_Nassella.genes.counts.matrix.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
 countData=as.matrix(countsTable[,c(10,11,12,16,17,18)])

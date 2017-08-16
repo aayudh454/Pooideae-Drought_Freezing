@@ -1302,7 +1302,100 @@ $transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/Brachyleytrum_trinityv211.f
 
 <div id='id-section9'/>
 
-### Page 9: 2017-05-02. Principal Component Analysis (PCA)
+### Page 9: 2017-08-16. Conserved freezing gene analysis
+
+R code
+
+```
+#Brachypodium distachyon
+setwd("~/Dropbox/Aayudh PhD/Brachy_Npul_transcriptomics/BdNP_Main")
+list.files()
+library("DESeq2")
+library("ggplot2")
+
+countsTable <- read.delim('Brachypodium_Nassella.genes.counts.matrix.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
+countData=as.matrix(countsTable[,c(1,2,3,7,8,9)])
+storage.mode(countData) = "integer"
+head(countData)
+
+conds <- read.delim("colsData_all.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
+colData <- as.data.frame(conds[c(1,2,3,7,8,9),])
+head(colData)
+
+dim(countData)
+dim(colData)
+#model 
+dds <- DESeqDataSetFromMatrix(countData = countData,
+                              colData = colData,
+                              design = ~ cond)
+dds
+dim(dds)
+# Filtering to remove rows with 0 reads
+dds <- dds[ rowSums(counts(dds)) > 1, ]
+dim(dds)
+dds <- DESeq(dds) 
+res <- results(dds)
+#sorts according to pvalue
+res <- res[order(res$padj),]
+head(res)
+summary(res)
+summary(sub_data)
+#Subsetting based on pvalue 0.05
+x.sub <- subset(res, pvalue < 0.05)
+x.sub=as.data.frame(x.sub)
+x.sub1=as.matrix(x.sub[,c(2,5,6)])
+BD1_CvsF=as.data.frame(x.sub1)
+dim(BD1_CvsF)
+table(sign(BD1_CvsF$log2FoldChange))
+write.csv(BD1_CvsF, file = "BD_CvsF_pvalu0.01.csv")
+#clear your environment
+#Nassella pulchra
+countsTable <- read.delim('Brachypodium_Nassella.genes.counts.matrix.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
+countData=as.matrix(countsTable[,c(10,11,12,16,17,18)])
+storage.mode(countData) = "integer"
+head(countData)
+
+conds <- read.delim("colsData_all.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
+colData <- as.data.frame(conds[c(10,11,12,16,17,18),])
+head(colData)
+
+dim(countData)
+dim(colData)
+#model 
+dds <- DESeqDataSetFromMatrix(countData = countData,
+                              colData = colData,
+                              design = ~ cond)
+dds
+dim(dds)
+# Filtering to remove rows with 0 reads
+dds <- dds[ rowSums(counts(dds)) > 1, ]
+dim(dds)
+dds <- DESeq(dds) 
+res <- results(dds)
+#sorts according to pvalue
+res <- res[order(res$padj),]
+head(res)
+summary(res)
+#Subsetting based on pvalue 0.01
+x.sub <- subset(res, pvalue < 0.05)
+x.sub=as.data.frame(x.sub)
+x.sub1=as.matrix(x.sub[,c(2,5,6)])
+NP_CvsF=as.data.frame(x.sub1)
+dim(NP_CvsF)
+table(sign(NP_CvsF$log2FoldChange))
+write.csv(NP_CvsF, file = "NP_CvsF_pvalu0.05.csv")
+
+#Make overlapping gene file
+BD= read.csv("BD_CvsF_pvalu0.05.csv")
+NP=read.csv("NP_CvsF_pvalu0.05.csv")
+Overlapped_freezingBD_NP= merge (BD,NP, by="ID")
+dim(Overlapped_freezingBD_NP)
+write.csv(Overlapped_freezingBD_NP, file = "Overlapped_freezingBD_NP_pvalue0.05.csv")
+#Up and Downregulated genes
+table(sign(Overlapped_freezingBD_NP$log2FoldChange_BD))
+table(sign(Overlapped_freezingBD_NP$log2FoldChange_NP))
+
+```
 
 
 

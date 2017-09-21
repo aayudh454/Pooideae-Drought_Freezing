@@ -27,7 +27,7 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 
 * [Page 8 2017-04-25](#id-section8). Principal Component Analysis (PCA)
 
-* [Page 9 2017-05-02](#id-section9). 
+* [Page 9 2017-08-16](#id-section9). Conserved freezing gene (Bdis and Npul) analysis
 
   ​
 
@@ -1315,7 +1315,7 @@ Run-
 #PBS -l nodes=1:ppn=1,pmem=10G,pvmem=12g
 #PBS -j oe
 #PBS -l walltime=12:00:00
-#PBS -M aadas@uvm.edu
+#PBS -M aayudh454@tamu.edu
 #PBS -m bea
 
 export PATH="/users/a/a/aadas/Bin/TransDecoder-3.0.1/transdecoder_plugins/cdhit:$PATH"
@@ -1324,7 +1324,7 @@ export PATH="/users/a/a/aadas/Bin/hmmer-3.1b2-linux-intel-x86_64/binaries:$PATH"
 export PATH="/users/a/a/aadas/Bin/ncbi-blast-2.6.0+/bin:$PATH"
 
 transDecoder_dir=/users/a/a/aadas/Bin/TransDecoder-3.0.1
-INPUT_DIR=/users/a/a/aadas/blast_Brachyleytrum
+INPUT_DIR=/users/a/a/aadas/nassellaBrachy_drought_freezing/blastP
 cd $INPUT_DIR
 ######################################################################
 ###concatenate outputs for blastp and hmmscan searches
@@ -1338,7 +1338,7 @@ rm -r split.* blastp-part-* hmmscan-part-*
 #####################################################################################################
 ###submit final step of TransDecoder searching for potential coding regions of the transcripts
 #####################################################################################################
-$transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/Brachyleytrum_trinityv211.fasta --retain_pfam_hits pfam.domtblout --retain_blastp_hits blastp.outfmt6
+$transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/npulBdis_Trinity211.fasta --retain_pfam_hits pfam.domtblout --retain_blastp_hits blastp.outfmt6
 ```
 
 ------

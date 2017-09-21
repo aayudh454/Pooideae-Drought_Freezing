@@ -978,14 +978,6 @@ gunzip Pfam-A.hmm.gz
 hmmpress Pfam-A.hmm
 ```
 
-```
-export PATH=$PATH:/users/a/a/aadas/Bin/hmmer-3.1b2-linux-intel-x86_64/binaries
-
-hmmscan --cpu 8 --domtblout pfam.domtblout /users/a/a/aadas/Bin/Pfam-A.hmm /users/a/a/aadas/annotation/long_ORF/longest_orfs.pep
-```
-
-
-
 ### Step 1: extract the long open reading frames by Transdecoder
 
 ```
@@ -1010,29 +1002,7 @@ cd $INPUT_DIR
 $transDecoder_dir/TransDecoder.LongOrfs -t $INPUT_DIR/npulBdis_Trinity211.fasta
 ```
 
-Step 2 
-
-```
-/users/a/a/aadas/Bin/TransDecoder-3.0.1/TransDecoder.Predict -t Brachyleytrum_trinityv211.fasta
-```
-
-#### Install blast
-
-go to-ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/  
-
-Download **linux.tar.gz**
-
-```
-$ export PATH=$PATH:/users/a/a/aadas/Bin/ncbi-blast-2.6.0+/bin
-```
-
-**make the database**
-
-```
-[aadas@bluemoon-user2 uniprot]$ makeblastdb -in uniprot_sprot.pep -dbtype prot
-```
-
-**script**
+### Step 2 (run two scripts):BlastP and pfam search together
 
 This single line using the blastp command below will compare your transcript fasta file
 
@@ -1041,48 +1011,6 @@ This single line using the blastp command below will compare your transcript fas
 You can enter 'blastp --help' for a list of the parameters.
 
 We choose the tab-delimited output format (6) and to only help the top hit (-max_target_seqs) and only if it has a minimum evalue of 0.001.
-
-```
-#!/bin/bash
-
-blastp -query /users/a/a/aadas/annotation/long_ORF/longest_orfs.pep \
-       -db /users/a/a/aadas/annotation/uniprot/uniprot_sprot.pep \
-       -out ~/Brachy_vs_uniprot.outfmt6 \
-       -outfmt 6 \
-       -evalue 1e-3 \
-       -max_target_seqs 1
-```
-
-now **bash** the script
-
-### BlastP Search
-
-If you want to submit as a job to VACC
-
-```
-#!/bin/bash
-
-######## This job needs 1 nodes, 4 processors total
-#PBS -l nodes=1:ppn=4,pmem=8gb,pvmem=9gb
-#PBS -l walltime=30:00:00
-#PBS -N blastp
-#PBS -j oe
-#PBS -M aadas@uvm.edu
-#PBS -m bea
-
-export PATH=$PATH:/users/a/a/aadas/Bin/ncbi-blast-2.6.0+/bin
-
-blastp -query /users/a/a/aadas/annotation/long_ORF/longest_orfs.pep \
-       -db /users/a/a/aadas/annotation/uniprot/uniprot_sprot.pep \
-       -out ~/Brachy_vs_uniprot.outfmt6 \
-       -outfmt 6 \
-       -evalue 1e-3 \
-       -max_target_seqs 1
-```
-
-### Pfam Search
-
-### Step 2 (run two scripts)
 
 ```
 #!/usr/bin/perl
@@ -1297,13 +1225,13 @@ for i in hmmscan-part*; do
 done
 ```
 
-Run-
+##### Run-
 
 ```
 ./run_blastp_hmmscan.sh
 ```
 
-### Final step: predict the **likely coding regions**
+### Step 3 - Final step: predict the **likely coding regions**
 
 ```
 #!/bin/bash
@@ -1336,6 +1264,19 @@ rm -r split.* blastp-part-* hmmscan-part-*
 #####################################################################################################
 $transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/npulBdis_Trinity211.fasta --retain_pfam_hits pfam.domtblout --retain_blastp_hits blastp.outfmt6
 ```
+
+##### Export the outfmt6 in a csv or text file
+
+1. Just rename the outfmt6 file with .txt
+2. Then open is any text viewer 
+3. Copy by command + C. Now open a excel sheet and paste it (make sure you leave one row empty for the headers).
+4. Use the header
+
+| query_ID | subject_id | %_identity | alignment length | mismatches | gap opens | q. start | q. end | s. start | s. end | evalue | bit score |
+| -------- | ---------- | ---------- | ---------------- | ---------- | --------- | -------- | ------ | -------- | ------ | ------ | --------- |
+|          |            |            |                  |            |           |          |        |          |        |        |           |
+
+5. Save the file.
 
 ------
 

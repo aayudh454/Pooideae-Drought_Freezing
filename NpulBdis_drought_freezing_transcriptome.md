@@ -25,9 +25,7 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 
 * [Page 7 2017-04-14](#id-section7). Gene Annotation with blastP
 
-* [Page 8 2017-04-25](#id-section8). Principal Component Analysis (PCA)
-
-* [Page 9 2017-08-16](#id-section9). Conserved freezing gene (Bdis and Npul) analysis
+* [Page 8 2017-08-16](#id-section8). Conserved freezing gene (Bdis and Npul) analysis
 
   ​
 
@@ -933,9 +931,9 @@ legend("topright", legend=names(col.strain), col=col.strain, lwd=2)
 
 ------
 
-<div id='id-section8'/>
+<div id='id-section7'/>
 
-### Page 8: 2017-08-11. Gene Annotation with blastP
+### Page 7: 2017-08-11. Gene Annotation with blastP
 
 Follow this link-http://transdecoder.github.io/
 
@@ -1011,8 +1009,6 @@ cd $INPUT_DIR
 
 $transDecoder_dir/TransDecoder.LongOrfs -t $INPUT_DIR/npulBdis_Trinity211.fasta
 ```
-
-
 
 Step 2 
 
@@ -1343,9 +1339,9 @@ $transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/npulBdis_Trinity211.fasta -
 
 ------
 
-<div id='id-section9'/>
+<div id='id-section8'/>
 
-### Page 9: 2017-08-16. Conserved freezing gene (Bdis and Npul) analysis
+### Page 8: 2017-08-16. Conserved freezing gene (Bdis and Npul) analysis
 
 R code
 

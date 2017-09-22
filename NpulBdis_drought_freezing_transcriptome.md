@@ -1291,16 +1291,20 @@ $transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/npulBdis_Trinity211.fasta -
    data1 <- read.csv("Overlapped_freezingBD_NP_pvalue0.05.csv")
    head(data)
    head(data1)
+   #merge data by ID
    merged_data<- merge(data1,data, by="query_ID")
    head(merged_data)
    merged_data_final <- as.data.frame(merged_data[,1:8])
    head(merged_data_final)
+   #Delete repeated column
+   library(dplyr)
+   data2 <- merged_data_final %>% distinct
+   #Save as excel file
    library(xlsx)
-   write.xlsx(merged_data_final, "Merged_freezing_conserved_annotated.xlsx", sheetName="Sheet1")  
+   write.xlsx(data2, "Merged_freezing_conserved_annotated.xlsx", sheetName="Sheet1")  
    ```
 
 9. Now cut the column 8 and paste it after column 1.
-
 
 
 ------

@@ -935,7 +935,108 @@ legend("topright", legend=names(col.strain), col=col.strain, lwd=2)
 
 <div id='id-section7'/>
 
-### Page 7: 2017-08-11. Gene Annotation with blastP
+### Page 7: 2017-08-16. Conserved freezing gene (Bdis and Npul) analysis
+
+R code
+
+```
+#Brachypodium distachyon
+setwd("~/Dropbox/Aayudh PhD/Brachy_Npul_transcriptomics/BdNP_Main")
+list.files()
+library("DESeq2")
+library("ggplot2")
+
+countsTable <- read.delim('Brachypodium_Nassella.genes.counts.matrix.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
+countData=as.matrix(countsTable[,c(1,2,3,7,8,9)])
+storage.mode(countData) = "integer"
+head(countData)
+
+conds <- read.delim("colsData_all.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
+colData <- as.data.frame(conds[c(1,2,3,7,8,9),])
+head(colData)
+
+dim(countData)
+dim(colData)
+#model 
+dds <- DESeqDataSetFromMatrix(countData = countData,
+                              colData = colData,
+                              design = ~ cond)
+dds
+dim(dds)
+# Filtering to remove rows with 0 reads
+dds <- dds[ rowSums(counts(dds)) > 1, ]
+dim(dds)
+dds <- DESeq(dds) 
+res <- results(dds)
+#sorts according to pvalue
+res <- res[order(res$padj),]
+head(res)
+summary(res)
+summary(sub_data)
+#Subsetting based on pvalue 0.05
+x.sub <- subset(res, pvalue < 0.05)
+x.sub=as.data.frame(x.sub)
+x.sub1=as.matrix(x.sub[,c(2,5,6)])
+BD1_CvsF=as.data.frame(x.sub1)
+dim(BD1_CvsF)
+table(sign(BD1_CvsF$log2FoldChange))
+write.csv(BD1_CvsF, file = "BD_CvsF_pvalu0.01.csv")
+#clear your environment
+
+# Write ID in the csv file manually
+
+#Nassella pulchra
+countsTable <- read.delim('Brachypodium_Nassella.genes.counts.matrix.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
+countData=as.matrix(countsTable[,c(10,11,12,16,17,18)])
+storage.mode(countData) = "integer"
+head(countData)
+
+conds <- read.delim("colsData_all.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
+colData <- as.data.frame(conds[c(10,11,12,16,17,18),])
+head(colData)
+
+dim(countData)
+dim(colData)
+#model 
+dds <- DESeqDataSetFromMatrix(countData = countData,
+                              colData = colData,
+                              design = ~ cond)
+dds
+dim(dds)
+# Filtering to remove rows with 0 reads
+dds <- dds[ rowSums(counts(dds)) > 1, ]
+dim(dds)
+dds <- DESeq(dds) 
+res <- results(dds)
+#sorts according to pvalue
+res <- res[order(res$padj),]
+head(res)
+summary(res)
+#Subsetting based on pvalue 0.01
+x.sub <- subset(res, pvalue < 0.05)
+x.sub=as.data.frame(x.sub)
+x.sub1=as.matrix(x.sub[,c(2,5,6)])
+NP_CvsF=as.data.frame(x.sub1)
+dim(NP_CvsF)
+table(sign(NP_CvsF$log2FoldChange))
+write.csv(NP_CvsF, file = "NP_CvsF_pvalu0.05.csv")
+
+#Make overlapping gene file
+BD= read.csv("BD_CvsF_pvalu0.05.csv")
+NP=read.csv("NP_CvsF_pvalu0.05.csv")
+Overlapped_freezingBD_NP= merge (BD,NP, by="ID")
+dim(Overlapped_freezingBD_NP)
+write.csv(Overlapped_freezingBD_NP, file = "Overlapped_freezingBD_NP_pvalue0.05.csv")
+#Up and Downregulated genes
+table(sign(Overlapped_freezingBD_NP$log2FoldChange_BD))
+table(sign(Overlapped_freezingBD_NP$log2FoldChange_NP))
+```
+
+------
+
+<div id='id-section8'/>
+
+### Page 8: 2017-08-11. Gene Annotation with blastP
 
 Follow this link-http://transdecoder.github.io/
 
@@ -1278,13 +1379,13 @@ $transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/npulBdis_Trinity211.fasta -
 | -------- | ---------- | ---------- | ---------------- | ---------- | --------- | -------- | ------ | -------- | ------ | ------ | --------- |
 |          |            |            |                  |            |           |          |        |          |        |        |           |
 
-5. Save the file as csv.
+1. Save the file as csv.
 
-6. Now open it in any text reader (BBEdit), now replace ''::'' with '',''. Now save it and close it. Open the csv now and adjust the header and delete column 2,3,4. Save and replace the csv.
+2. Now open it in any text reader (BBEdit), now replace ''::'' with '',''. Now save it and close it. Open the csv now and adjust the header and delete column 2,3,4. Save and replace the csv.
 
-7. Rename both file 1st column with "query_ID"
+3. Rename both file 1st column with "query_ID"
 
-8. Now use R to merge
+4. Now use R to merge
 
    ```
    setwd("~/Desktop/Brachy_Npul_transcriptomics/BlastP")
@@ -1306,112 +1407,7 @@ $transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/npulBdis_Trinity211.fasta -
    write.xlsx(data2, "Merged_freezing_conserved_annotated.xlsx", sheetName="Sheet1")  
    ```
 
-9. Now cut the column 8 and paste it after column 1.
-
-
-------
-
-<div id='id-section8'/>
-
-### Page 8: 2017-08-16. Conserved freezing gene (Bdis and Npul) analysis
-
-R code
-
-```
-#Brachypodium distachyon
-setwd("~/Dropbox/Aayudh PhD/Brachy_Npul_transcriptomics/BdNP_Main")
-list.files()
-library("DESeq2")
-library("ggplot2")
-
-countsTable <- read.delim('Brachypodium_Nassella.genes.counts.matrix.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
-countData=as.matrix(countsTable[,c(1,2,3,7,8,9)])
-storage.mode(countData) = "integer"
-head(countData)
-
-conds <- read.delim("colsData_all.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
-colData <- as.data.frame(conds[c(1,2,3,7,8,9),])
-head(colData)
-
-dim(countData)
-dim(colData)
-#model 
-dds <- DESeqDataSetFromMatrix(countData = countData,
-                              colData = colData,
-                              design = ~ cond)
-dds
-dim(dds)
-# Filtering to remove rows with 0 reads
-dds <- dds[ rowSums(counts(dds)) > 1, ]
-dim(dds)
-dds <- DESeq(dds) 
-res <- results(dds)
-#sorts according to pvalue
-res <- res[order(res$padj),]
-head(res)
-summary(res)
-summary(sub_data)
-#Subsetting based on pvalue 0.05
-x.sub <- subset(res, pvalue < 0.05)
-x.sub=as.data.frame(x.sub)
-x.sub1=as.matrix(x.sub[,c(2,5,6)])
-BD1_CvsF=as.data.frame(x.sub1)
-dim(BD1_CvsF)
-table(sign(BD1_CvsF$log2FoldChange))
-write.csv(BD1_CvsF, file = "BD_CvsF_pvalu0.01.csv")
-#clear your environment
-
-# Write ID in the csv file manually
-
-#Nassella pulchra
-countsTable <- read.delim('Brachypodium_Nassella.genes.counts.matrix.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
-countData=as.matrix(countsTable[,c(10,11,12,16,17,18)])
-storage.mode(countData) = "integer"
-head(countData)
-
-conds <- read.delim("colsData_all.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
-colData <- as.data.frame(conds[c(10,11,12,16,17,18),])
-head(colData)
-
-dim(countData)
-dim(colData)
-#model 
-dds <- DESeqDataSetFromMatrix(countData = countData,
-                              colData = colData,
-                              design = ~ cond)
-dds
-dim(dds)
-# Filtering to remove rows with 0 reads
-dds <- dds[ rowSums(counts(dds)) > 1, ]
-dim(dds)
-dds <- DESeq(dds) 
-res <- results(dds)
-#sorts according to pvalue
-res <- res[order(res$padj),]
-head(res)
-summary(res)
-#Subsetting based on pvalue 0.01
-x.sub <- subset(res, pvalue < 0.05)
-x.sub=as.data.frame(x.sub)
-x.sub1=as.matrix(x.sub[,c(2,5,6)])
-NP_CvsF=as.data.frame(x.sub1)
-dim(NP_CvsF)
-table(sign(NP_CvsF$log2FoldChange))
-write.csv(NP_CvsF, file = "NP_CvsF_pvalu0.05.csv")
-
-#Make overlapping gene file
-BD= read.csv("BD_CvsF_pvalu0.05.csv")
-NP=read.csv("NP_CvsF_pvalu0.05.csv")
-Overlapped_freezingBD_NP= merge (BD,NP, by="ID")
-dim(Overlapped_freezingBD_NP)
-write.csv(Overlapped_freezingBD_NP, file = "Overlapped_freezingBD_NP_pvalue0.05.csv")
-#Up and Downregulated genes
-table(sign(Overlapped_freezingBD_NP$log2FoldChange_BD))
-table(sign(Overlapped_freezingBD_NP$log2FoldChange_NP))
-
-```
-
-
+5. Now cut the column 8 and paste it after column 1.
 
 ------------------
 
@@ -1419,7 +1415,7 @@ table(sign(Overlapped_freezingBD_NP$log2FoldChange_NP))
 
 ### Page 9: 2017-09-22. Go annotation
 
-1. Take the Merged_freezing_conserved_annotated.xlsx file and copy the query ID
+1. Take the **Merged_freezing_conserved_annotated.xlsx** file and copy the query ID
 2. Now go to the uniprot website [http://www.uniprot.org/uploadlists/](http://www.uniprot.org/uploadlists/).
 3. Upload your file.
 4. Select From: UniProtKB AC/ID, To: UniProtKB (default)

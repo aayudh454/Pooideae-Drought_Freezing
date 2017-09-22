@@ -1277,7 +1277,31 @@ $transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/npulBdis_Trinity211.fasta -
 |          |            |            |                  |            |           |          |        |          |        |        |           |
 
 5. Save the file as csv.
-6. Now open it in any text reader (BBEdit), now replace ''::'' with '',''. Now save it and close it. Open the csv now and adjust the header and delete column 2,3,4. Save and replace the csv.  
+
+6. Now open it in any text reader (BBEdit), now replace ''::'' with '',''. Now save it and close it. Open the csv now and adjust the header and delete column 2,3,4. Save and replace the csv.
+
+7. Rename both file 1st column with "query_ID"
+
+8. Now use R to merge
+
+   ```
+   setwd("~/Desktop/Brachy_Npul_transcriptomics/BlastP")
+   list.files()
+   data <- read.csv("Brachy_Npul_annnotation (BLASTP)_main.csv")
+   data1 <- read.csv("Overlapped_freezingBD_NP_pvalue0.05.csv")
+   head(data)
+   head(data1)
+   merged_data<- merge(data1,data, by="query_ID")
+   head(merged_data)
+   merged_data_final <- as.data.frame(merged_data[,1:8])
+   head(merged_data_final)
+   library(xlsx)
+   write.xlsx(merged_data_final, "Merged_freezing_conserved_annotated.xlsx", sheetName="Sheet1")  
+   ```
+
+9. Now cut the column 8 and paste it after column 1.
+
+
 
 ------
 

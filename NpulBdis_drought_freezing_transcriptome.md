@@ -27,6 +27,8 @@ Login info: **ssh aadas@bluemoon-user2.uvm.edu**
 
 * [Page 8 2017-08-16](#id-section8). Conserved freezing gene (Bdis and Npul) analysis
 
+* [Page 9 2017-09-22](#id-section9). GO annotation 
+
   ​
 
 ------
@@ -1413,7 +1415,18 @@ table(sign(Overlapped_freezingBD_NP$log2FoldChange_NP))
 
 ------------------
 
+<div id='id-section8'/>
 
+### Page 9: 2017-09-22. Go annotation
+
+1. Take the Merged_freezing_conserved_annotated.xlsx file and copy the query ID
+2. Now go to the uniprot website [http://www.uniprot.org/uploadlists/](http://www.uniprot.org/uploadlists/).
+3. Upload your file.
+4. Select From: UniProtKB AC/ID, To: UniProtKB (default)
+5. Click GO.
+6. Click on the “columns” to add all five Gene Ontology columns, KEGG (under 'Genome Annotation'), and PANTHER and Pfam (under 'Family and Domains'). 
+7. Click on the “download” button to download your data as a tab separated format.
+8. Open in text viewer and copy it in a excel and save as csv.
 
 
 

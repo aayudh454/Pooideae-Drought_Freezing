@@ -1276,7 +1276,8 @@ $transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/npulBdis_Trinity211.fasta -
 | -------- | ---------- | ---------- | ---------------- | ---------- | --------- | -------- | ------ | -------- | ------ | ------ | --------- |
 |          |            |            |                  |            |           |          |        |          |        |        |           |
 
-5. Save the file.
+5. Save the file as csv.
+6. Now open it in any text reader (BBEdit), now replace ''::'' with '',''. Now save it and close it. Open the csv now and adjust the header and delete column 2,3,4. Save and replace the csv.  
 
 ------
 

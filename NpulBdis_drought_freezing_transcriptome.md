@@ -1424,6 +1424,19 @@ $transDecoder_dir/TransDecoder.Predict -t $INPUT_DIR/npulBdis_Trinity211.fasta -
 7. Click on the “download” button to download your data as a tab separated format.
 8. Open in text viewer and copy it in a excel and save as csv.
 
+#### **GO_MWU steps**
+
+a. Now download all from  https://github.com/z0on/GO_MWU
+
+b. make a new folder in your directory.
+
+c. Now upload GO_MWU.R, gomwu_a.pl, gomwu_b.pl, gomwu.functions.R to server folder.
+
+```
+ip0af52b3a:~ aayudhdas$ cd /Users/aayudhdas/Desktop/Brachy_Npul_transcriptomics/GO ontology/GO_MWU-master
+ip0af52b3a:GO_MWU-master aayudhdas$ scp GO_MWU.R aadas@bluemoon-user2.uvm.edu:~/nassellaBrachy_drought_freezing/go_MWU
+```
+
 
 
 

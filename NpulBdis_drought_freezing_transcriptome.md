@@ -2,7 +2,7 @@
 
 ### Author: Aayudh Das
 
-Login info: **ssh aadas@bluemoon-user2.uvm.edu**
+Login info: **ssh aadas@vacc-user2.uvm.edu**
 
 ### Data structure (*B. distachyon and N. pulchra* data)
 
